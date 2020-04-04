@@ -38,6 +38,16 @@ const facebook = {
         await util.gotoPage(BASE_URL)
     },
     downloadInformation: async () => {
+        //acessar pagina de download das informacoes
+        console.log('acessando pagina')
+        const urlDownloadInformation = 'https://m.facebook.com/your_information'
+        await util.gotoPage(urlDownloadInformation)
+        await util.getElAndClickWait('#u_0_o > div._24c7 > div:nth-child(2) > span > a')
+
+        console.log('desmarcar tudo')
+        await util.getElAndWaitClick('#root > div._7om2 > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > button')
+        console.log('marcar apenas comentarios')
+        await util.getElAndWaitClick('#root > div._7om2 > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) > div > div:nth-child(3) > div')
 
     },
     config: {

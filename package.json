@@ -1,22 +1,25 @@
 {
-  "name": "electron-quick-start",
+  "name": "facebook-manager",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Automatizar configurações facebook",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/wandersonsousa/facebook-manager.git",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "node",
+    "puppeteer",
+    "facebook"
   ],
-  "author": "GitHub",
+  "author": "wandersonsousa",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^8.2.0"
+  },
+  "dependencies": {
+    "lowdb": "^1.0.0",
+    "puppeteer": "^2.1.1"
   }
 }

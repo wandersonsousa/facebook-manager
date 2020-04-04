@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Facebook Manager</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../css/photon.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+    <div class="window">
+
+        <header class="toolbar toolbar-header">
+            <h1 class="title"><strong>Configurar Conta</strong></h1>
+
+            <div class="toolbar-actions">
+
+                <div class="btn-group">
+                    <a class="btn btn-default" href="../index.html">
+                        <span class="icon icon-home icon-text"></span>home
+                    </a>
+                </div>
+
+                <div class="btn-group">
+                    <a class="btn btn-default" href="#">
+                        <span class="icon icon-user-add icon-text"></span>adicionar conta
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="window-content">
+            <div class="pane-group">
+                <div class="pane text-center" id="app">
+
+                    <button id="login" class="btn btn-positive">Login</button>
+
+                </div>
+            </div>
+        </div>
+        <script src="../js/vue.min.js"></script>
+</body>
+
+<!-- you scripts here -->
+<script>
+    db = require('../renderer.js')
+    api = require('../engine/configureAccount.js')
+
+    const options = {}
+
+    options.login = {}
+    options.login.twoFactors = true
+    options.login.email = "Wanderson3004@yandex.com"
+    options.login.password = "Darksouls29"
+
+    options.changeName = {}
+    options.changeName.firstName = "Ruanzinho"
+    options.changeName.lastName = "Lima"
+
+    options.addNewEmail = {}
+    options.addNewEmail.email = "wandersonsousa6689@gmail.com"
+
+    let $btnLogin = document.querySelector('#login')
+    $btnLogin.addEventListener('click', initConfig)
+
+    function initConfig() {
+        api(options)
+    }
+</script>
+
+</html>

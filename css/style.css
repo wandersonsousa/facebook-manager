@@ -1,0 +1,29 @@
+#container-contas {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+#table-contas{
+    border-spacing: 0 8px;
+}
+#table-contas td {
+    font-size: 15px;    
+}
+#table-contas tr {
+    border-spacing:10px;
+}
+
+
+#pane-form {
+    padding:50px 100px;
+}
+#btn-container button{
+    padding:5px 20px;
+}
+#btn-container a{
+    padding:5px 20px;
+}
+
+a{
+    text-decoration: none;
+}

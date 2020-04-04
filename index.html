@@ -1,19 +1,102 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
 
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
-  </body>
+<head>
+  <title>Facebook Manager</title>
+
+  <meta charset="UTF-8">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/photon.css">
+  <link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+<body>
+
+  <div class="window" id="app">
+    <header class="toolbar toolbar-header">
+      <h1 class="title"><strong>Home</strong></h1>
+
+
+
+      <div class="toolbar-actions">
+        <div class="btn-group">
+          <button class="btn btn-default">
+            <span class="icon icon-home icon-text"></span>
+            home
+          </button>
+        </div>
+
+        <div class="btn-group">
+          <a class="btn btn-default" href="pages/adicionar_conta.html">
+            <span class="icon icon-user-add icon-text"></span>adicionar conta
+          </a>
+        </div>
+
+    </header>
+    <div id="container-contas" class="window-content">
+      <div id="pane-contas" class="pane">
+        <table id="table-contas" class="table-striped">
+          <thead>
+            <tr>
+              <th>Conta</th>
+              <th>email</th>
+              <th>senha</th>
+            </tr>
+          </thead>
+          <tbody id="container_contas">
+            <tr v-for="conta in contas">
+              <td v-show="hidd" class="account_id">{{conta.id}}</td>
+              <td><span class="icon icon-user"></span></td>
+              <td>{{conta.email}}</td>
+              <td>{{conta.password}}</td>
+              <td v-on:click="go_config" class="text-center btn-primary config"><span class="icon icon-tools"></span>
+              </td>
+              <td v-on:click="deleteAccount" class="text-center btn-negative delete">X</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <a id="config" href="pages/configurar_conta.html"></a>
+    </div>
+
+  </div>
+  </div>
+
+  <script src="js/vue.min.js"></script>
+</body>
+
+
+
+
+<script>
+  let db = require('./renderer.js');
+</script>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      contas: db.get('contas').map().value(),
+      hidd: false
+    },
+    methods: {
+      deleteAccount: (e) => {
+        console.clear()
+        let id_acc = e.target.parentNode.firstChild.innerText
+        db.get('contas').remove({ id: parseInt(id_acc) }).write()
+        app.contas.forEach((conta, index) => {
+          if (conta.id === parseInt(id_acc)) {
+            app.contas.splice(index, 1)
+          }
+        })
+      },
+      go_config: (e) => {
+        document.querySelector('#config').click()
+      }
+    }
+  })
+</script>
+
 </html>

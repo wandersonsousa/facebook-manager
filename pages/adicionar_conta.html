@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Facebook Manager</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/photon.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <meta charset="UTF-8">
+
+</head>
+
+<body>
+    <div class="window">
+        <header class="toolbar toolbar-header">
+            <h1 class="title"><strong>Adicionar Conta</strong></h1>
+
+            <div class="toolbar-actions">
+
+                <div class="btn-group">
+                    <a class="btn btn-default" href="../index.html">
+                        <span class="icon icon-home icon-text"></span>home
+                    </a>
+                </div>
+
+                <div class="btn-group">
+                    <a class="btn btn-default" href="#">
+                        <span class="icon icon-user-add icon-text"></span>adicionar conta
+                    </a>
+                </div>
+            </div>
+
+        </header>
+        <div class="window-content" id="app">
+            <div id="pane-container" class="pane">
+                <form id="form_cadastro" action="#">
+                    <div id="pane-form" class="pane">
+                        <div class="form-group">
+                            <label>Email address</label>
+                            <input id="email" type="email" class="form-control" placeholder="Email">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input id="password" type="text" class="form-control" placeholder="Password">
+                        </div>
+
+                        <div id="btn-container" class="form-group text-center">
+                            <button class="btn btn-primary" id="btn_salvar">Salvar</button>
+                            <a class="btn btn-negative" href="../index.html">Voltar</a>
+                        </div>
+
+                        <div class="text-center" id="container-resp"></div>
+
+                </form>
+
+
+
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+<script src="../js/adicionarConta.js"></script>
+
+
+</html>

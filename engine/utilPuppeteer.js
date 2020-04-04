@@ -27,6 +27,10 @@ const pupapi = {
         await pupapi.page.waitForSelector(selector, options)
         return await pupapi.getElement(selector)
     },
+    getElAndWaitClick: async (selector) => {
+        let $el = await pupapi.waitAndGetEl(selector)
+        $el.click({ delay: Math.random() * 10 })
+    },
     getElAndClickWait: async (selector) => {
         //espera ate que o elemento apareca na tela pra pegar, entao clica e espera ate que a proxima pagina seja carregada
         let $el = await pupapi.waitAndGetEl(selector)

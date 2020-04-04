@@ -18,7 +18,7 @@ async function init(options) {
         }
 
     if (options.addNewEmail)
-        await fb.config.addNewEmail(options.addNewEmail.email) * /
+        await fb.config.addNewEmail(options.addNewEmail.email)
 }
 
 

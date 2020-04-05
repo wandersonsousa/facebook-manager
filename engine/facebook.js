@@ -44,10 +44,10 @@ const facebook = {
         await util.gotoPage(urlDownloadInformation)
         await util.getElAndClickWait('#u_0_o > div._24c7 > div:nth-child(2) > span > a')
 
-        console.log('desmarcar tudo')
+        //desmarcar tudo button
         await util.getElAndWaitClick('#root > div._7om2 > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > button')
-        console.log('marcar apenas comentarios')
-        await util.getElAndWaitClick('#root > div._7om2 > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) > div > div:nth-child(3) > div')
+        //marcar apenas comentarios
+        await util.getElAndWaitClick('#root > div > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(4)')
 
     },
     config: {

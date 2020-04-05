@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
 const pupapi = {
     headlessOpt: null,
     browser: null,
@@ -9,7 +9,10 @@ const pupapi = {
         //instancia o browser e inicia uma page, ambas sao variaveis globais da api
         pupapi.headlessOpt = headlessOpt
         pupapi.browser = await puppeteer.launch(
-            { headless: pupapi.headlessOpt }
+            {
+                headless: pupapi.headlessOpt,
+                executablePath: '/usr/bin/google-chrome'
+            }
         )
         pupapi.page = await pupapi.browser.newPage()
     },
@@ -29,7 +32,7 @@ const pupapi = {
     },
     getElAndWaitClick: async (selector) => {
         let $el = await pupapi.waitAndGetEl(selector)
-        $el.click({ delay: Math.random() * 10 })
+        await pupapi.page.click(selector, { delay: Math.random() * 10 })
     },
     getElAndClickWait: async (selector) => {
         //espera ate que o elemento apareca na tela pra pegar, entao clica e espera ate que a proxima pagina seja carregada

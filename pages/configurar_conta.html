@@ -49,18 +49,15 @@
     api = require('../engine/configureAccount.js')
 
     const options = {}
+    
+    options.headless = false
 
     options.login = {}
-    options.login.twoFactors = true
     options.login.email = "Wanderson3004@yandex.com"
     options.login.password = "Darksouls29"
 
-    options.changeName = {}
-    options.changeName.firstName = "Ruanzinho"
-    options.changeName.lastName = "Lima"
-
     options.addNewEmail = {}
-    options.addNewEmail.email = "wandersonsousa6689@gmail.com"
+    options.addNewEmail.email ='wandersonsousa6689@gmail.com'
 
     let $btnLogin = document.querySelector('#login')
     $btnLogin.addEventListener('click', initConfig)

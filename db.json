@@ -7,9 +7,14 @@
     },
     {
       "id": 1,
-      "email": "testeconta@gmail.com",
-      "password": "testesenha"
+      "email": "ruandasilva273@gmail.com",
+      "password": "Darksouls29"
+    },
+    {
+      "id": 2,
+      "email": "wstutors1@gmail.com",
+      "password": "Darksouls29"
     }
   ],
-  "count": 53
+  "count": 57
 }

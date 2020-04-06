@@ -23,7 +23,6 @@
     "electron": "^8.2.0"
   },
   "dependencies": {
-    "lowdb": "^1.0.0",
-    "puppeteer-core": "^2.1.1"
+    "lowdb": "^1.0.0"
   }
 }

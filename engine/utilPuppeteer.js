@@ -3,7 +3,7 @@ const pupapi = {
     headlessOpt: null,
     browser: null,
     page: null,
-    waitOpt: 'networkidle0',
+    waitOpt: 'networkidle2',
 
     init: async (headlessOpt) => {
         //instancia o browser e inicia uma page, ambas sao variaveis globais da api
@@ -21,37 +21,51 @@ const pupapi = {
         //vai pra pagina e espera evento, por padrao espera que a pagina seja carregada
         await pupapi.page.goto(url, { waitUntil: optWait })
     },
+
+
     getElement: async (selector) => {
         //pega elemento e retorna pra uma variavel
         return await pupapi.page.$(selector)
     },
+
+
     waitAndGetEl: async (selector, options = { visible: true, timeout: 10000 }) => {
         //espera ate que o elemento apareca na tela pra pegar, vem com opcoes padroes de timeout, sempre que puder use esse metodo ao getElement
         await pupapi.page.waitForSelector(selector, options)
         return await pupapi.getElement(selector)
     },
-    getElAndWaitClick: async (selector) => {
-        let $el = await pupapi.waitAndGetEl(selector)
+
+
+    getElAndWaitClick: async (selector, options = { visible: true, timeout: 10000 } ) => {
+        await pupapi.page.waitForSelector(selector, options)
         await pupapi.page.click(selector, { delay: Math.random() * 10 })
     },
-    getElAndClickWait: async (selector) => {
+
+
+    getElAndClickWait: async (selector, options = { visible: true, timeout: 10000 }) => {
         //espera ate que o elemento apareca na tela pra pegar, entao clica e espera ate que a proxima pagina seja carregada
-        let $el = await pupapi.waitAndGetEl(selector)
-        await pupapi.clickAndWait($el)
+        await pupapi.page.waitForSelector(selector, options)
+        await pupapi.clickAndWait(selector)
     },
-    getElAndClearType: async (selector, text) => {
-        let $input = await pupapi.waitAndGetEl(selector)
-        await pupapi.clearAndType($input, text)
+
+
+    getElAndClearType: async (selector, text, options = { visible: true, timeout: 10000 }) => {
+        await pupapi.page.waitForSelector(selector, options)
+        await pupapi.clearAndType(selector, text)
     },
-    clickAndWait: async (element, waitOpt = pupapi.waitOpt) => {
+
+
+    clickAndWait: async (selector, waitOpt = pupapi.waitOpt) => {
         //clica e espera evento, por padrao espera que a nova pagina seja carregada, recomendado pra botoes que levem a outras paginas
-        await element.click({ delay: Math.random() * 10 })
+        await pupapi.page.click( selector, { delay: Math.random() * 10 } )
         await pupapi.page.waitForNavigation({ waitUntil: waitOpt })
     },
-    clearAndType: async (inputText, text) => {
+
+
+    clearAndType: async (selector, text) => {
         //limpa um campo de texto com a tecnica de clicar tres vezes e digitar, uso math random  pra fazer um delay mais realista
-        await inputText.click({ clickCount: 3, delay: Math.random() * 20 })
-        await inputText.type(text, { delay: Math.random() * 120 });
+        await pupapi.page.click(selector, { clickCount: 3, delay: Math.random() * 20 } )
+        await pupapi.page.type(selector, text, { delay: Math.random() * 120 });
     }
     ,
     minimizeBrowser: async () => {

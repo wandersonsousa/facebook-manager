@@ -37,34 +37,128 @@
 
                     <button id="login" class="btn btn-positive">Login</button>
 
+                    <form action="#">
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="doisFatores" type="checkbox"> A conta possui verificação de dois fatores ?
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input v-on:click="showFormat" id="baixarInformacoes" type="checkbox"> Baixar informações no inicio
+
+                                <div v-if="showFormatDiv">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" value="JSON" name="formato" checked>
+                                            JSON
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" value="HTML" name="formato">
+                                            HTML
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="alterarPrivacidade" type="checkbox"> Alterar definições de privacidade
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="excluirFotosVideos" type="checkbox"> Excluir todas as fotos e vídeos ?
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="excluirMensagens" type="checkbox"> Excluir todas as mensagens ?
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button v-on:click="analisarRespostas" type="submit" id="iniciarConfig" class="btn btn-form btn-primary">iniciar</button>
+                            <button type="submit" class="btn btn-form btn-negative">cancelar</button>
+                          </div>
+                    </form>
+
                 </div>
             </div>
         </div>
         <script src="../js/vue.min.js"></script>
 </body>
 
-<!-- you scripts here -->
 <script>
-    db = require('../renderer.js')
-    api = require('../engine/configureAccount.js')
+    var app = new Vue({
+      el: '#app',
+      data: {
+        showFormatDiv:false,
+        options:{},
+        db: require('../renderer.js'),
+        api: require('../engine/configureAccount.js'),
 
-    const options = {}
-    
-    options.headless = false
+      },
+      methods: {
+          qs: (selector)=> {
+            return document.querySelector(selector)
+          },
+          qsAll:(selector)=> {
+            return document.querySelectorAll(selector)
+          },
+          showFormat: (e)=>{
+            if(e.target.checked){
+                app.showFormatDiv = true
+            }else {
+                app.showFormatDiv = false
+            }  
+          },
+          analisarRespostas: (e) => {
+            e.preventDefault()
+            app.options.headless = false
+            app.options.login = {}
+            app.options.login.email = "Wanderson3004@yandex.com"
+            app.options.login.password = "Darksouls29"
 
-    options.login = {}
-    options.login.email = "Wanderson3004@yandex.com"
-    options.login.password = "Darksouls29"
+            if( app.qs('#doisFatores').checked ){
+                app.options.twoFactors = true
+            }
 
-    options.addNewEmail = {}
-    options.addNewEmail.email ='wandersonsousa6689@gmail.com'
+            if( app.qs('#baixarInformacoes').checked ){
 
-    let $btnLogin = document.querySelector('#login')
-    $btnLogin.addEventListener('click', initConfig)
+               app.options.downloadInformation = {}
 
-    function initConfig() {
-        api(options)
-    }
-</script>
+               for (const formatOpt of app.qsAll('[name="formato"]')) {
+                    if( formatOpt.checked ){
+                        app.options.downloadInformation.format = formatOpt.value
+                    }
+               }
+                
+            }
+
+            if( app.qs('#alterarPrivacidade').checked ){
+                app.options.changePrivacity = true
+            }
+
+            if( app.qs('#excluirFotosVideos').checked ){
+               app.options.deletePhotosVideos = true
+            }
+
+            if( app.qs('#excluirMensagens').checked ){
+                app.options.deleteAllMessages = true  
+            }
+
+           app.api(app.options)
+          },
+      }
+    })
+  </script>
 
 </html>

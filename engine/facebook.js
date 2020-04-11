@@ -53,10 +53,10 @@ const facebook = {
         //marcar apenas comentarios
         await util.getElAndWaitClick('#root > div > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(4)')
 
-        //escolhendo como JSON
+        //pegando select de formato
         await util.getElAndWaitClick('#root > div > div > div:nth-child(2) > div:nth-child(4) > div._2uak._5hrm > select')
 
-        if(format == 'json'){
+        if(format == 'JSON'){
             await util.page.select('select[name="format"]', 'JSON')
         }else {
             await util.page.select('select[name="format"]', 'HTML')
@@ -65,7 +65,6 @@ const facebook = {
         await util.getElAndClickWait('#root > div > div > div:nth-child(2) > div._3l2- > div > div > button')
     },
     config: {
-
 
         changeName: async (newFirstName, newLastName) => {
             //TERMINADO
@@ -81,6 +80,102 @@ const facebook = {
 
             await util.getElAndClickWait('button[name="save"]')
 
+        },
+
+
+        configurePrivacity: async ( privacityPage = 0 ) => {
+            let urlConfigurePrivacity = null
+            if(privacityPage == 0){
+                urlConfigurePrivacity = BASE_URL + 'privacy/touch/basic/'
+            }else if(privacityPage == 1){
+                urlConfigurePrivacity = BASE_URL + 'privacy/touch/timeline_and_tagging/'
+            }
+            
+            
+
+            await util.gotoPage(urlConfigurePrivacity)
+
+            
+            let $urlLinks = await util.page.$$('._55wo._55x2._56bf > div > div:nth-child(3) > a')
+            let $links = null
+            let $link = null
+            let $options = null
+            let $opt = null
+            let $optHandle = null
+            let $optValue = null
+            let $optionName = null
+
+            for (let indexOpt = 0; indexOpt < $urlLinks.length; indexOpt++){
+
+                await util.page.waitFor(3000)
+
+                $links = await util.page.$$('._55wo._55x2._56bf > div > div:nth-child(3) > a')
+
+                $link = $links[indexOpt]
+
+                await $link.click({delay:0.5})
+
+                await console.log('questao: '+ (indexOpt + 1) )
+
+                try {
+                    await util.page.waitFor('fieldset', {visible:true, timeout:2000})
+                    $options = await util.page.$$('fieldset label[data-sigil] div[id]')
+
+                    for (let index = 1; index <= $options.length; index++) {
+                        $opt = await util.page.$('fieldset label[data-sigil]:nth-child('+index+') div[id]' )
+                        
+                        $optHandle = await $opt.getProperty('innerText')
+                        $optValue = await $optHandle.jsonValue()
+
+                        if(indexOpt == 5 && privacityPage == 0){
+                            await console.log($optValue)
+                            if ($optValue === 'Seus amigos de amigos'){
+
+                                await console.log('entrou no if')
+
+                                await util.page.evaluate(( index ) => {
+                                    let $radio = document.querySelector('fieldset label[data-sigil]:nth-child('+index+') input[type="radio"]' )
+                                    let $divToClick = document.querySelector('fieldset label[data-sigil]:nth-child('+index+')')
+    
+                                    if($radio.checked == false){
+                                        $divToClick.click()
+                                    }
+                            
+                                }, index)
+                                await console.log('selecionado com sucesso')
+                                break
+                            }
+                        }
+                        
+                        if ($optValue === 'Somente eu'){
+
+                            await util.page.evaluate(( index ) => {
+                                let $radio = document.querySelector('fieldset label[data-sigil]:nth-child('+index+') input[type="radio"]' )
+                                let $divToClick = document.querySelector('fieldset label[data-sigil]:nth-child('+index+')')
+
+                                if($radio.checked == false){
+                                    $divToClick.click()
+                                }
+                                
+
+                            }, index)
+                            await console.log('Selecionado com sucesso')
+                            break
+                            
+                        }
+
+                    } 
+                } catch (error) {
+                    await console.log(error)
+                }
+                await util.page.waitFor(1000)
+                await util.gotoPage(urlConfigurePrivacity)
+                await util.page.waitFor(3000)
+                
+            }
+
+
+            
         },
 
 

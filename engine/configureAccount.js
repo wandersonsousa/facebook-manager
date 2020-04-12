@@ -18,14 +18,16 @@ async function init(opt) {
         await fb.config.configurePrivacity(privacityPage = 1)
     }
     
-    if( opt.deletePhotosVideos  )
+    if( opt.deletePhotosVideos  ){
         await fb.config.deletePhotosVideos()
-
-    if( opt.deleteAllMessages )
+    }
+    if( opt.deleteAllMessages ){
         await fb.config.deleteAllMessages()
+    }
 
-    if (opt.addNewEmail)
+    if (opt.addNewEmail){
         await fb.config.addNewEmail(opt.addNewEmail.email)
+    }
     
 }
 

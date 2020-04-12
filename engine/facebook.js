@@ -14,7 +14,7 @@ const facebook = {
         //TERMINADO
         util.headlessOpt = headlessOpt
         await util.init(util.headlessOpt)
-        await util.gotoPage(BASE_URL + "login")
+        await util.page.goto(BASE_URL + "login", {waitOpt:'networkidle2', timeout:0})
     },
 
     manualLogin: async () => {
@@ -38,6 +38,7 @@ const facebook = {
         await util.getElAndClearType('#m_login_password', facebook.user.password)
         await util.getElAndClickWait('#u_0_4 > button')
         await util.gotoPage(BASE_URL)
+       
     },
 
 
@@ -65,6 +66,7 @@ const facebook = {
         await util.getElAndClickWait('#root > div > div > div:nth-child(2) > div._3l2- > div > div > button')
     },
     config: {
+
 
         changeName: async (newFirstName, newLastName) => {
             //TERMINADO
@@ -107,7 +109,7 @@ const facebook = {
 
             for (let indexOpt = 0; indexOpt < $urlLinks.length; indexOpt++){
 
-                await util.page.waitFor(3000)
+                await util.page.waitFor(1000)
 
                 $links = await util.page.$$('._55wo._55x2._56bf > div > div:nth-child(3) > a')
 
@@ -221,7 +223,52 @@ const facebook = {
                 let $confirmAlteration = await facebook.getElement('button[value="Confirmar"]')
                 await facebook.clickAndWait($confirmAlteration)
             }
-        }
+        },
+        deleteAllMessages: async () => {
+            let urlDeleteAllMessages = BASE_URL + 'messages'
+            await util.gotoPage( urlDeleteAllMessages )
+
+            let $all_messages_divs = await util.getElements('#threadlist_rows div div[id]')
+
+            for (let index = 0; index < $all_messages_divs.length; index++) {
+                $all_messages_divs = await util.getElements('#threadlist_rows div div[id]')
+                const $msgDiv = $all_messages_divs[index];
+                
+                await $msgDiv.click()
+                await util.page.waitFor('[data-sigil="select-button select-link touchable"]')
+
+
+                let $opt = await util.page.evaluate( () => {
+                    let $selectOptions = Array.from( document.querySelector('[data-sigil="select-button select-link touchable"]') )
+
+                    for( $opt of $selectOptions ){
+                        if($opt.innerText == 'Excluir'){
+                            return $opt
+                        } 
+                    }
+                })
+                
+                await console.log( $opt )
+
+                
+                await util.page.waitForNavigation()
+                await util.gotoPage( urlDeleteAllMessages )
+
+            }
+            //intera sobre todas as conversas
+
+            //gera um arraylike com todas as conversas
+            //document.querySelectorAll('#threadlist_rows div div[id]')
+
+            //let selectOptions = Array.from( document.querySelector('[data-sigil="select-button select-link touchable"]') )
+
+            //for( a of selec ){ if(a.innerText == 'Excluir'){console.log(a)} }
+            
+            //document.querySelector("#root > div > div.acw.abt > a.btn.btnC.mfss.touchable").click()
+
+            //depois volta pras mensages https://m.facebook.com/messages/
+        },
+
     },
 
 }

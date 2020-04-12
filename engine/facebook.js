@@ -132,9 +132,6 @@ const facebook = {
                         if(indexOpt == 5 && privacityPage == 0){
                             await console.log($optValue)
                             if ($optValue === 'Seus amigos de amigos'){
-
-                                await console.log('entrou no if')
-
                                 await util.page.evaluate(( index ) => {
                                     let $radio = document.querySelector('fieldset label[data-sigil]:nth-child('+index+') input[type="radio"]' )
                                     let $divToClick = document.querySelector('fieldset label[data-sigil]:nth-child('+index+')')
@@ -225,50 +222,68 @@ const facebook = {
             }
         },
         deleteAllMessages: async () => {
-            let urlDeleteAllMessages = BASE_URL + 'messages'
+            let urlDeleteAllMessages = 'https://mbasic.facebook.com/messages'
+            
             await util.gotoPage( urlDeleteAllMessages )
-
-            let $all_messages_divs = await util.getElements('#threadlist_rows div div[id]')
+            
+            let $all_messages_divs = await util.getElements('td.t.bv.bw a')
 
             for (let index = 0; index < $all_messages_divs.length; index++) {
-                $all_messages_divs = await util.getElements('#threadlist_rows div div[id]')
-                const $msgDiv = $all_messages_divs[index];
-                
-                await $msgDiv.click()
-                await util.page.waitFor('[data-sigil="select-button select-link touchable"]')
+                $all_messages_divs = await util.getElements('td.t.bv.bw a')
 
+                const $msg = $all_messages_divs[index];
+                await $msg.click({delay:0.5})
 
-                let $opt = await util.page.evaluate( () => {
-                    let $selectOptions = Array.from( document.querySelector('[data-sigil="select-button select-link touchable"]') )
+                await util.page.waitFor('input[name="delete"]')
+                const $btnDelete = await util.page.$('input[name="delete"]')
+                await $btnDelete.click( {delay:0.6} )
 
-                    for( $opt of $selectOptions ){
-                        if($opt.innerText == 'Excluir'){
-                            return $opt
-                        } 
-                    }
-                })
-                
-                await console.log( $opt )
+                await util.page.waitFor('#root a.bj.bl')
+                const $btnConfirmDelete = await util.page.$('#root a.bj.bl') 
+                await $btnConfirmDelete.click( {delay:0.7} )
 
-                
-                await util.page.waitForNavigation()
+                await util.page.waitFor(2000)
                 await util.gotoPage( urlDeleteAllMessages )
-
             }
-            //intera sobre todas as conversas
 
-            //gera um arraylike com todas as conversas
-            //document.querySelectorAll('#threadlist_rows div div[id]')
+            //pega os links que direcionam pro batepapo dentro das tds que contem um batepapo
+            //document.querySelectorAll('td.t.bv.bw a')
 
-            //let selectOptions = Array.from( document.querySelector('[data-sigil="select-button select-link touchable"]') )
 
-            //for( a of selec ){ if(a.innerText == 'Excluir'){console.log(a)} }
+            //pega input que vai pra aba de exluir o batepapo
+            //document.querySelector('input[name="delete"]')
             
-            //document.querySelector("#root > div > div.acw.abt > a.btn.btnC.mfss.touchable").click()
+            //pega botao pra confirmar exclusao
+            //document.querySelector('#root a.bj.bl')
+            //quando clica nesse botao ele carrega a tela de bate papo novamente
 
-            //depois volta pras mensages https://m.facebook.com/messages/
         },
 
+
+
+
+        // let $all_messages_divs = await util.getElements('#threadlist_rows div div[id]')
+
+        //     for (let index = 0; index < $all_messages_divs.length; index++) {
+        //         $all_messages_divs = await util.getElements('#threadlist_rows div div[id]')
+        //         const $msgDiv = $all_messages_divs[index];
+        //         await $msgDiv.click()
+
+        //         await util.page.waitFor('[data-sigil="select-button select-link touchable"]', {visible:true, timeout:20000})
+
+        //         await util.page.waitFor(1000)
+
+        //         //await util.page.tap('select[data-sigil="select-button select-link touchable"]')
+
+        //         await util.page.waitFor('select option:nth-child(3)', {visible:true, timeout:20000})
+        //         await util.page.waitFor(500)
+
+        //         await util.page.tap('select option:nth-child(3)')
+
+        //         await util.page.waitFor(3000)
+        //         await util.gotoPage( urlDeleteAllMessages )
+
+        //     }
     },
 
 }

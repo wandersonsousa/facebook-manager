@@ -12,5 +12,8 @@
       "email": "Wanderson3004@yandex.com",
       "senha": "Darksouls29"
     }
-  ]
+  ],
+  "settings": {
+    "browserPath": "/usr/bin/google-chrome"
+  }
 }

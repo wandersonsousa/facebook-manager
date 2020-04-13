@@ -1,4 +1,6 @@
 const puppeteer = require('puppeteer-core')
+const db = require('../renderer.js')
+const BROWSER_PATH = db.get('settings').get('browserPath').value()
 const pupapi = {
     headlessOpt: null,
     browser: null,
@@ -12,7 +14,7 @@ const pupapi = {
         pupapi.browser = await puppeteer.launch(
             {
                 headless: pupapi.headlessOpt,
-                executablePath: '/usr/bin/google-chrome'
+                executablePath: BROWSER_PATH
             }
         )
         pupapi.page = await pupapi.browser.newPage()

@@ -12,6 +12,8 @@
 
 </head>
 
+  
+
 <body>
 
   <div class="window" id="app">
@@ -71,7 +73,17 @@
 
 
 <script>
-  let db = require('./renderer.js');
+  let db = require('./renderer.js')
+  const os = require('os')
+  const CHROME_PATH_WIN = 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
+  const CHROME_PATH_LINUX = '/usr/bin/google-chrome'
+
+  if ( os.platform() === 'win32' ) {
+    db.set('settings.browserPath', CHROME_PATH_WIN).write()
+  }else if( os.platform() === 'linux' ){
+    db.set('settings.browserPath', CHROME_PATH_LINUX).write()
+  }
+  console.log('path chrome: ', db.get('settings').get('browserPath').value() )
 </script>
 
 <script>

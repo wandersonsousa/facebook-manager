@@ -25,6 +25,7 @@ async function init(opt) {
         await fb.config.deleteAllMessages()
     }
 
+
     if (opt.addNewEmail){
         await fb.config.addNewEmail(opt.addNewEmail.email)
     }

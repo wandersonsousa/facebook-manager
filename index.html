@@ -49,8 +49,8 @@
             <tr v-for="conta in contas">
               <td v-show="hidd" class="account_id">{{conta.id}}</td>
               <td><span class="icon icon-user"></span></td>
-              <td>{{conta.email}}</td>
-              <td>{{conta.password}}</td>
+              <td id="email">{{conta.email}}</td>
+              <td id="senha">{{conta.password}}</td>
               <td v-on:click="go_config" class="text-center btn-primary config"><span class="icon icon-tools"></span>
               </td>
               <td v-on:click="deleteAccount" class="text-center btn-negative delete">X</td>
@@ -79,7 +79,8 @@
     el: '#app',
     data: {
       contas: db.get('contas').map().value(),
-      hidd: false
+      hidd: false,
+      sessionInfo:null,
     },
     methods: {
       deleteAccount: (e) => {
@@ -93,6 +94,13 @@
         })
       },
       go_config: (e) => {
+        const $email = document.querySelector('td#email').innerText
+        const $senha = document.querySelector('td#senha').innerText
+        app.sessionInfo = { email:$email, senha:$senha } 
+        
+        db.set('session', []).write()
+        db.get('session').push( app.sessionInfo ).write()
+    
         document.querySelector('#config').click()
       }
     }

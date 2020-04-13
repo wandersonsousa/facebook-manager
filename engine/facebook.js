@@ -169,7 +169,6 @@ const facebook = {
                 }
                 await util.page.waitFor(1000)
                 await util.gotoPage(urlConfigurePrivacity)
-                await util.page.waitFor(3000)
                 
             }
 
@@ -226,21 +225,30 @@ const facebook = {
             
             await util.gotoPage( urlDeleteAllMessages )
             
-            let $all_messages_divs = await util.getElements('td.t.bv.bw a')
+            let $all_messages_divs = await util.getElements('table td h3 a')
+            let msg_length = $all_messages_divs.length
 
-            for (let index = 0; index < $all_messages_divs.length; index++) {
-                $all_messages_divs = await util.getElements('td.t.bv.bw a')
+            for (let index = 0; index < msg_length; index++) {
+                await util.page.waitFor('table td h3 a')
+                $all_messages_divs = await util.getElements('table td h3 a')
 
-                const $msg = $all_messages_divs[index];
+                //excluir sempre a primeira mensagem
+                const $msg = $all_messages_divs[0];
                 await $msg.click({delay:0.5})
 
                 await util.page.waitFor('input[name="delete"]')
                 const $btnDelete = await util.page.$('input[name="delete"]')
                 await $btnDelete.click( {delay:0.6} )
 
-                await util.page.waitFor('#root a.bj.bl')
-                const $btnConfirmDelete = await util.page.$('#root a.bj.bl') 
+               
+                await util.page.waitForXPath('//*[@id="root"]/div[1]/div[2]/a[2]')
+
+                const [$btnConfirmDelete] = await util.page.$x('//*[@id="root"]/div[1]/div[2]/a[2]')
+                await console.log($btnConfirmDelete)
+
                 await $btnConfirmDelete.click( {delay:0.7} )
+      
+                
 
                 await util.page.waitFor(2000)
                 await util.gotoPage( urlDeleteAllMessages )

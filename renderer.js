@@ -5,7 +5,9 @@ const adapter = new FileSync('db.json')
 const db = low(adapter)
 
 
-db.defaults({ contas: [], count: 0 })
+db.defaults({ contas: [], session:[], count: 0 })
     .write()
+
+//limpa a session
 
 module.exports = db

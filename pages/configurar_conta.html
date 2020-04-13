@@ -35,8 +35,6 @@
             <div class="pane-group">
                 <div class="pane text-center" id="app">
 
-                    <button id="login" class="btn btn-positive">Login</button>
-
                     <form action="#">
 
                         <div class="checkbox">
@@ -72,11 +70,11 @@
                             </label>
                         </div>
 
-                        <div class="checkbox">
+                        <!-- <div class="checkbox">
                             <label>
                                 <input id="excluirFotosVideos" type="checkbox"> Excluir todas as fotos e vídeos ?
                             </label>
-                        </div>
+                        </div> -->
 
                         <div class="checkbox">
                             <label>
@@ -124,9 +122,11 @@
             e.preventDefault()
             app.options.headless = false
             app.options.login = {}
-            app.options.login.email = "wstutors1@gmail.com"
-            app.options.login.password = "Darksouls29"
+            const _dadosContaDb = app.db.get('session').find({}).value()
 
+            app.options.login.email = _dadosContaDb.email
+            app.options.login.password = _dadosContaDb.senha
+  
             if( app.qs('#doisFatores').checked ){
                 app.options.login.twoFactors = true
             }
@@ -147,9 +147,9 @@
                 app.options.changePrivacity = true
             }
 
-            if( app.qs('#excluirFotosVideos').checked ){
-               app.options.deletePhotosVideos = true
-            }
+            // if( app.qs('#excluirFotosVideos').checked ){
+            //    app.options.deletePhotosVideos = true
+            // }
 
             if( app.qs('#excluirMensagens').checked ){
                 app.options.deleteAllMessages = true  

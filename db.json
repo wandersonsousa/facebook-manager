@@ -1,11 +1,5 @@
 {
-  "contas": [
-    {
-      "id": 0,
-      "email": "Wanderson3004@yandex.com",
-      "password": "Darksouls29"
-    }
-  ],
+  "contas": [],
   "count": 2,
   "session": [
     {

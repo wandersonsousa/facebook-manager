@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
+const db = require('./renderer')
 
 function createWindow() {
   // Create the browser window.
@@ -27,6 +28,8 @@ app.whenReady().then(createWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
+  //delete session account
+  db.set('session', {})
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') app.quit()

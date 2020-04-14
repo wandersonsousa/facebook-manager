@@ -51,9 +51,9 @@
             <tr v-for="conta in contas">
               <td v-show="hidd" class="account_id">{{conta.id}}</td>
               <td><span class="icon icon-user"></span></td>
-              <td id="email">{{conta.email}}</td>
-              <td id="senha">{{conta.password}}</td>
-              <td v-on:click="go_config" class="text-center btn-primary config"><span class="icon icon-tools"></span>
+              <td class="emailValue" id="email">{{conta.email}}</td>
+              <td class="senhaValue" id="senha">{{conta.password}}</td>
+              <td v-on:click="go_config" class="text-center btn-primary config"><span class="icon icon-tools simbol_config"></span>
               </td>
               <td v-on:click="deleteAccount" class="text-center btn-negative delete">X</td>
             </tr>
@@ -77,13 +77,13 @@
   const os = require('os')
   const CHROME_PATH_WIN = 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
   const CHROME_PATH_LINUX = '/usr/bin/google-chrome'
-
   if ( os.platform() === 'win32' ) {
-    db.set('settings.browserPath', CHROME_PATH_WIN).write()
-  }else if( os.platform() === 'linux' ){
-    db.set('settings.browserPath', CHROME_PATH_LINUX).write()
+    db.set('settings.browserPath', CHROME_PATH_WIN).write() 
+  }else if(os.platform() === 'linux'){
+    db.set('settings.browserPath',  CHROME_PATH_LINUX).write()
   }
   console.log('path chrome: ', db.get('settings').get('browserPath').value() )
+
 </script>
 
 <script>
@@ -106,13 +106,20 @@
         })
       },
       go_config: (e) => {
-        const $email = document.querySelector('td#email').innerText
-        const $senha = document.querySelector('td#senha').innerText
-        app.sessionInfo = { email:$email, senha:$senha } 
+        let $email = null
+        let $senha = null
         
-        db.set('session', []).write()
-        db.get('session').push( app.sessionInfo ).write()
-    
+        if( e.target.className.includes('simbol_config') ){
+          $email = e.target.parentNode.parentNode.querySelector('.emailValue').innerText
+          $senha = e.target.parentNode.parentNode.querySelector('.senhaValue').innerText
+        }else {
+          $email = e.target.parentNode.querySelector('.emailValue').innerText
+          $senha = e.target.parentNode.querySelector('.senhaValue').innerText
+        }
+
+        app.sessionInfo = { email:$email, senha:$senha } 
+        db.set('session', app.sessionInfo).write()
+
         document.querySelector('#config').click()
       }
     }

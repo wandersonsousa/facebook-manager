@@ -122,10 +122,9 @@
             e.preventDefault()
             app.options.headless = false
             app.options.login = {}
-            const _dadosContaDb = app.db.get('session').find({}).value()
-
-            app.options.login.email = _dadosContaDb.email
-            app.options.login.password = _dadosContaDb.senha
+        
+            app.options.login.email = app.db.get('session').get('email').value()
+            app.options.login.password = app.db.get('session').get('senha').value()
   
             if( app.qs('#doisFatores').checked ){
                 app.options.login.twoFactors = true

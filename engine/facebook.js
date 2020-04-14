@@ -230,7 +230,7 @@ const facebook = {
 
             for (let index = 0; index < msg_length; index++) {
                 await util.page.waitFor('table td h3 a')
-                $all_messages_divs = await util.getElements('table td h3 a')
+                $all_messages_divs = await util.page.$$('table td h3 a')
 
                 //excluir sempre a primeira mensagem
                 const $msg = $all_messages_divs[0];
@@ -253,45 +253,8 @@ const facebook = {
                 await util.page.waitFor(2000)
                 await util.gotoPage( urlDeleteAllMessages )
             }
-
-            //pega os links que direcionam pro batepapo dentro das tds que contem um batepapo
-            //document.querySelectorAll('td.t.bv.bw a')
-
-
-            //pega input que vai pra aba de exluir o batepapo
-            //document.querySelector('input[name="delete"]')
-            
-            //pega botao pra confirmar exclusao
-            //document.querySelector('#root a.bj.bl')
-            //quando clica nesse botao ele carrega a tela de bate papo novamente
-
         },
 
-
-
-
-        // let $all_messages_divs = await util.getElements('#threadlist_rows div div[id]')
-
-        //     for (let index = 0; index < $all_messages_divs.length; index++) {
-        //         $all_messages_divs = await util.getElements('#threadlist_rows div div[id]')
-        //         const $msgDiv = $all_messages_divs[index];
-        //         await $msgDiv.click()
-
-        //         await util.page.waitFor('[data-sigil="select-button select-link touchable"]', {visible:true, timeout:20000})
-
-        //         await util.page.waitFor(1000)
-
-        //         //await util.page.tap('select[data-sigil="select-button select-link touchable"]')
-
-        //         await util.page.waitFor('select option:nth-child(3)', {visible:true, timeout:20000})
-        //         await util.page.waitFor(500)
-
-        //         await util.page.tap('select option:nth-child(3)')
-
-        //         await util.page.waitFor(3000)
-        //         await util.gotoPage( urlDeleteAllMessages )
-
-        //     }
     },
 
 }

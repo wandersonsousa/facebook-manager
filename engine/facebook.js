@@ -229,11 +229,20 @@ const facebook = {
             let msg_length = $all_messages_divs.length
 
             for (let index = 0; index < msg_length; index++) {
-                await util.page.waitFor('table td h3 a')
+                await util.page.waitFor('table td h3 a', {visible:true, timeout:0})
                 $all_messages_divs = await util.page.$$('table td h3 a')
 
+                await console.log('index antes: ', index)
+                if( index === ( msg_length - 1) && $all_messages_divs.length > 1 ){
+                    index--
+                    debugger
+                }
+                await console.log('index depois: ', index)
+                
+
+                await console.log($all_messages_divs)
                 //excluir sempre a primeira mensagem
-                const $msg = $all_messages_divs[0];
+                const $msg = $all_messages_divs[0]
                 await $msg.click({delay:0.5})
 
                 await util.page.waitFor('input[name="delete"]')
@@ -244,13 +253,11 @@ const facebook = {
                 await util.page.waitForXPath('//*[@id="root"]/div[1]/div[2]/a[2]')
 
                 const [$btnConfirmDelete] = await util.page.$x('//*[@id="root"]/div[1]/div[2]/a[2]')
-                await console.log($btnConfirmDelete)
 
                 await $btnConfirmDelete.click( {delay:0.7} )
-      
+                await util.page.waitForNavigation()
                 
-
-                await util.page.waitFor(2000)
+                
                 await util.gotoPage( urlDeleteAllMessages )
             }
         },

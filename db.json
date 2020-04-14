@@ -9,14 +9,19 @@
       "id": 1,
       "email": "ruandasilva273@gmail.com",
       "password": "Darksouls29"
+    },
+    {
+      "id": 2,
+      "email": "wstutors1@gmail.com",
+      "password": "Darksouls29"
     }
   ],
   "session": {
-    "email": "ruandasilva273@gmail.com",
+    "email": "wstutors1@gmail.com",
     "senha": "Darksouls29"
   },
-  "count": 2,
+  "count": 3,
   "settings": {
-    "browserPath": "/usr/bin/google-chrome"
+    "browserPath": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
   }
 }

@@ -41,6 +41,7 @@ window.onload = () => {
     function validEmail(email) {
         return /^[\w+.]+@\w+\.\w{2,}(?:\.\w{2})?$/.test(email)
     }
+    
     function validText(username) {
         return username !== '' && username !== ' '
     }

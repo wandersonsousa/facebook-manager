@@ -232,13 +232,9 @@ const facebook = {
                 await util.page.waitFor('table td h3 a', {visible:true, timeout:0})
                 $all_messages_divs = await util.page.$$('table td h3 a')
 
-                await console.log('index antes: ', index)
                 if( index === ( msg_length - 1) && $all_messages_divs.length > 1 ){
                     index--
-                    debugger
-                }
-                await console.log('index depois: ', index)
-                
+                }                
 
                 await console.log($all_messages_divs)
                 //excluir sempre a primeira mensagem

@@ -33,7 +33,7 @@
 
         <div class="window-content">
             <div class="pane-group">
-                <div class="pane text-center" id="app">
+                <div class="pane text-center" id="app" v-cloak>
 
                     <form action="#">
 
@@ -83,8 +83,11 @@
                         </div>
 
                         <div class="form-actions">
-                            <button v-on:click="analisarRespostas" type="submit" id="iniciarConfig" class="btn btn-form btn-primary">iniciar</button>
-                            <button type="submit" class="btn btn-form btn-negative">cancelar</button>
+                            
+                            <button v-on:click="analisarRespostas" id="iniciarConfig" class="btn btn-form btn-primary">iniciar</button>
+
+                            <button v-on:click="cancelarConfig" id="cancelarConfig" class="btn btn-form btn-negative">cancelar</button>
+
                           </div>
                     </form>
 
@@ -156,6 +159,10 @@
 
            app.api(app.options)
           },
+          cancelarConfig: (e) => {
+              e.preventDefault()
+              console.log('apertou cancelar')
+          }
       }
     })
   </script>

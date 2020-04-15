@@ -1,13 +1,18 @@
 const fb = require('./facebook');
 async function init(opt) {
-    if (opt)
-        await fb.initialize(opt.headless)
 
-    if (opt.login)
+    if(opt.openNewPage){
+        await fb.openNewPage()
+    }else{
+        await fb.initialize(opt.headless)
+        if ( opt.login )
         if (opt.login.twoFactors)
             await fb.manualLogin()
         else
             await fb.login(opt.login.email, opt.login.password)
+    }
+
+    
 
     if (opt.downloadInformation){
         await fb.downloadInformation( opt.downloadInformation.format )
@@ -22,6 +27,7 @@ async function init(opt) {
         await fb.config.deletePhotosVideos()
     }
     if( opt.deleteAllMessages ){
+        await console.log('entrou nesse maldito if')
         await fb.config.deleteAllMessages()
     }
 

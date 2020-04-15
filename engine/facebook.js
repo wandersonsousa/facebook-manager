@@ -17,6 +17,13 @@ const facebook = {
         await util.page.goto(BASE_URL + "login", {waitOpt:'networkidle2', timeout:0})
     },
 
+    openNewPage: async() => {
+        util.page = await util.browser.newPage()
+        /*await console.log( (await util.browser.pages())[1] )
+        util.page = (await util.browser.pages())[1]*/
+        await util.page.goto(BASE_URL , {waitOpt:'networkidle2', timeout:0})
+    },
+
     manualLogin: async () => {
         //TERMINADO
         //espera até que o usuário sair da tela de login e entrar na tela inicial
@@ -221,9 +228,10 @@ const facebook = {
             }
         },
         deleteAllMessages: async () => {
+            await console.log('entrou nesse maldito if')
             let urlDeleteAllMessages = 'https://mbasic.facebook.com/messages'
             
-            await util.gotoPage( urlDeleteAllMessages )
+            await util.page.goto( urlDeleteAllMessages, { waitUntil: 'networkidle2' } )
             
             let $all_messages_divs = await util.getElements('table td h3 a')
             let msg_length = $all_messages_divs.length

@@ -1,23 +1,27 @@
 const puppeteer = require('puppeteer-core')
 const db = require('../renderer.js')
 const BROWSER_PATH = db.get('settings').get('browserPath').value()
+
 const pupapi = {
     headlessOpt: null,
     browser: null,
     page: null,
     waitOpt: 'networkidle2',
-    options: {visible:true, timeout:10000},
+    options: {visible:true, timeout:0},
+    puppeteer:puppeteer,
 
     init: async (headlessOpt) => {
         //instancia o browser e inicia uma page, ambas sao variaveis globais da api
         pupapi.headlessOpt = headlessOpt
+        
         pupapi.browser = await puppeteer.launch(
             {
                 headless: pupapi.headlessOpt,
-                executablePath: BROWSER_PATH
+                executablePath: BROWSER_PATH,
+                args: ['--start-maximized'],
             }
         )
-        pupapi.page = await pupapi.browser.newPage()
+        pupapi.page = (await pupapi.browser.pages())[0]
     },
 
     gotoPage: async (url, optWait = pupapi.waitOpt) => {

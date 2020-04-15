@@ -123,12 +123,15 @@
           },
           analisarRespostas: (e) => {
             e.preventDefault()
-            app.options.headless = false
-            app.options.login = {}
-        
-            app.options.login.email = app.db.get('session').get('email').value()
-            app.options.login.password = app.db.get('session').get('senha').value()
-  
+            if( app.options.login ){
+                app.options.openNewPage = true
+            }else {
+                app.options.login = {}
+                app.options.login.email = app.db.get('session').get('email').value()
+                app.options.login.password = app.db.get('session').get('senha').value()
+            }
+
+            app.options.headless = false   
             if( app.qs('#doisFatores').checked ){
                 app.options.login.twoFactors = true
             }
@@ -156,8 +159,8 @@
             if( app.qs('#excluirMensagens').checked ){
                 app.options.deleteAllMessages = true  
             }
-
-           app.api(app.options)
+            console.log( app.options )
+            app.api(app.options)
           },
           cancelarConfig: (e) => {
               e.preventDefault()

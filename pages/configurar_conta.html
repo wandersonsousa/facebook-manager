@@ -41,7 +41,8 @@
                             <label>
                                 <input id="doisFatores" type="checkbox"> A conta possui verificação de dois fatores ?
                             </label>
-                        </div>
+                        </div> 
+
                         <div class="checkbox">
                             <label>
                                 <input v-on:click="showFormat" id="baixarInformacoes" type="checkbox"> Baixar informações no inicio
@@ -63,6 +64,13 @@
 
                             </label>
                         </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="deletarAtividade" type="checkbox"> Deletar Toda a Atividade ( Fotos, Álbuns, Desfazer amizades, e histórico )
+                            </label>
+                        </div>
+
 
                         <div class="checkbox">
                             <label>
@@ -159,6 +167,10 @@
             if( app.qs('#excluirMensagens').checked ){
                 app.options.deleteAllMessages = true  
             }
+            if( app.qs('#deletarAtividade').checked ){
+                app.options.deleteActivityPhotosAndAlbuns = true  
+            }
+            
             console.log( app.options )
             app.api(app.options)
           },

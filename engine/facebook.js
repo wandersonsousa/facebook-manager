@@ -9,6 +9,7 @@ const facebook = {
         username: null,
         password: null
     },
+    browser: util.browser,
 
     initialize: async (headlessOpt = false) => {
         //TERMINADO
@@ -72,9 +73,80 @@ const facebook = {
 
         await util.getElAndClickWait('#root > div > div > div:nth-child(2) > div._3l2- > div > div > button')
     },
-    config: {
+    deleteActivityPhotosAndAlbuns: async () => {
+        const urlPerfil = 'https://mbasic.facebook.com/profile.php'
+        await util.gotoPage(urlPerfil)
+
+        await util.page.waitForXPath('//div[@id="m-timeline-cover-section"]/div[3]/a[contains(text(), "Registro de Atividades")]')
+        const [$btnToActivityHistory] = await util.page.$x('//div[@id="m-timeline-cover-section"]/div[3]/a[contains(text(), "Registro de Atividades")]')
+        await $btnToActivityHistory.click( {delay:0.7} )
+        await util.page.waitFor(2000)
+
+        let $allActivity = await util.page.$$('section[id]')
+        const  activityLength =  $allActivity.length
+        let pos = 0
+        for (let index = 0; index < activityLength; index++) {
+            await util.page.reload()
+            await util.page.waitFor('section[id]', {visible:true, timeout:0})
+            $allActivity = await util.page.$$('section[id]')
+
+            if( index === ( activityLength - 1) && $allActivity.length > 1 ){
+                index--
+            }                
+
+            await console.log($allActivity)
+            //excluir sempre a primeira atividade
+            const $activity = $allActivity[pos]
+            //logica para apagar
+            if(!$activity){
+                break
+            }
+
+            let findLink = await util.page.evaluate(
+                (act) => {
+                    let links = act.querySelectorAll('div > span > a')
+                    if( links ){
+                        for (const link of links) {
+                            if(link.innerText == 'Excluir'){
+                                link.click()
+                                return true
+                            }else if( link.innerText == 'Desfazer amizade'){
+                                link.click()
+                                return true
+                            }else if( link.innerText == 'Ocultar na linha do tempo' ){
+                                link.click()                    
+                                return true
+                            }else if(link.innerText == 'Descurtir'){
+                                link.click() 
+                                return true
+                            }else{
+                                return false             
+                            }
+                        }
+                    }else{
+                        return false
+                    }     
+                    
+                }, $activity
+            )
+            
+            await console.log( findLink )
+            if( findLink ){
+                await util.page.waitForNavigation({waitUntil:'load'})
+            }else{
+                pos++
+            }
+            
+            
+            
+            
+            
+        
+        }
 
 
+    },
+    config: {  
         changeName: async (newFirstName, newLastName) => {
             //TERMINADO
             const urlChangeName = CONFIG_URL + '/account/?name'
@@ -228,7 +300,6 @@ const facebook = {
             }
         },
         deleteAllMessages: async () => {
-            await console.log('entrou nesse maldito if')
             let urlDeleteAllMessages = 'https://mbasic.facebook.com/messages'
             
             await util.page.goto( urlDeleteAllMessages, { waitUntil: 'networkidle2' } )
@@ -255,7 +326,6 @@ const facebook = {
 
                
                 await util.page.waitForXPath('//*[@id="root"]/div[1]/div[2]/a[2]')
-
                 const [$btnConfirmDelete] = await util.page.$x('//*[@id="root"]/div[1]/div[2]/a[2]')
 
                 await $btnConfirmDelete.click( {delay:0.7} )

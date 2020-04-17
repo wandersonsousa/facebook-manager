@@ -1,6 +1,7 @@
 const util = require('./utilPuppeteer')
 
 const BASE_URL = 'https://m.facebook.com/'
+const LOGIN_URL = 'https://mbasic.facebook.com/login'
 const CONFIG_URL = BASE_URL + 'settings'
 const PERFIL_URL = BASE_URL + 'profile/intro/edit/public/'
 
@@ -15,7 +16,7 @@ const facebook = {
         //TERMINADO
         util.headlessOpt = headlessOpt
         await util.init(util.headlessOpt)
-        await util.page.goto(BASE_URL + "login", {waitOpt:'networkidle2', timeout:0})
+        await util.page.goto(LOGIN_URL, {waitOpt:'networkidle2', timeout:0})
     },
 
     openNewPage: async() => {
@@ -25,11 +26,21 @@ const facebook = {
         await util.page.goto(BASE_URL , {waitOpt:'networkidle2', timeout:0})
     },
 
-    manualLogin: async () => {
+    manualLogin: async (username, password) => {
         //TERMINADO
+        facebook.user.username = username
+        facebook.user.password = password
+
+        await util.getElAndClearType('#m_login_email', facebook.user.username)
+        await util.getElAndClearType('input[type="password"]', facebook.user.password)
+        await Promise.all([
+            util.page.waitFor('[name="login"]'),
+            util.page.waitForNavigation(),
+            util.page.click('[name="login"]')    
+        ])
         //espera até que o usuário sair da tela de login e entrar na tela inicial
         if (util.headlessOpt == false) {
-            await util.page.waitForSelector('div#feed_jewel', { visible: true, timeout: 0 })
+            await util.page.waitForSelector('div#m_newsfeed_stream', { visible: true, timeout: 0 })
             util.minimizeBrowser()
         } else {
             throw new Error('"manualLogin" expects "headlessOpt" in "initialize" to false')
@@ -43,8 +54,14 @@ const facebook = {
         facebook.user.password = password
 
         await util.getElAndClearType('#m_login_email', facebook.user.username)
-        await util.getElAndClearType('#m_login_password', facebook.user.password)
-        await util.getElAndClickWait('#u_0_4 > button')
+        await util.getElAndClearType('input[type="password"]', facebook.user.password)
+        await Promise.all([
+            util.page.waitFor('[name="login"]'),
+            util.page.waitForNavigation(),
+            util.page.click('[name="login"]')
+            
+            
+          ])
         await util.gotoPage(BASE_URL)
        
     },
@@ -73,77 +90,130 @@ const facebook = {
 
         await util.getElAndClickWait('#root > div > div > div:nth-child(2) > div._3l2- > div > div > button')
     },
-    deleteActivityPhotosAndAlbuns: async () => {
-        const urlPerfil = 'https://mbasic.facebook.com/profile.php'
-        await util.gotoPage(urlPerfil)
 
-        await util.page.waitForXPath('//div[@id="m-timeline-cover-section"]/div[3]/a[contains(text(), "Registro de Atividades")]')
-        const [$btnToActivityHistory] = await util.page.$x('//div[@id="m-timeline-cover-section"]/div[3]/a[contains(text(), "Registro de Atividades")]')
-        await $btnToActivityHistory.click( {delay:0.7} )
-        await util.page.waitFor(2000)
 
-        let $allActivity = await util.page.$$('section[id]')
-        const  activityLength =  $allActivity.length
-        let pos = 0
-        for (let index = 0; index < activityLength; index++) {
-            await util.page.reload()
-            await util.page.waitFor('section[id]', {visible:true, timeout:0})
-            $allActivity = await util.page.$$('section[id]')
-
-            if( index === ( activityLength - 1) && $allActivity.length > 1 ){
+    deleteActivityPhotos:async()=>{
+        const urlActivity = 'https://www.facebook.com/profile.php?sk=allactivity'
+        await Promise.all([
+            util.page.goto(urlActivity),
+            util.page.waitForNavigation({waitUntil:'networkidle2'})
+          ])
+        await console.log('carregou pagina')
+        
+        await util.page.waitFor('table.uiGrid a[aria-label="Editar"]')
+        await console.log('encontrou os links')
+        $tablesLinkActivity = await util.page.$$('table.uiGrid a[aria-label="Editar"]')
+        tablesLength = $tablesLinkActivity.length
+        let posFirstActivityClickable = 0
+        for (let index = 0; index < tablesLength; index++) {
+            $tablesLinkActivity = await util.page.$$('table.uiGrid a[aria-label="Editar"]')
+            if( index === ( tablesLength - 1) && $tablesLinkActivity.length > 1 ){
                 index--
-            }                
+            }  
 
-            await console.log($allActivity)
-            //excluir sempre a primeira atividade
-            const $activity = $allActivity[pos]
-            //logica para apagar
-            if(!$activity){
+            let $contextActivity = $tablesLinkActivity[posFirstActivityClickable]
+            if(!$contextActivity){
                 break
             }
 
-            let findLink = await util.page.evaluate(
-                (act) => {
-                    let links = act.querySelectorAll('div > span > a')
-                    if( links ){
-                        for (const link of links) {
-                            if(link.innerText == 'Excluir'){
-                                link.click()
-                                return true
-                            }else if( link.innerText == 'Desfazer amizade'){
-                                link.click()
-                                return true
-                            }else if( link.innerText == 'Ocultar na linha do tempo' ){
-                                link.click()                    
-                                return true
-                            }else if(link.innerText == 'Descurtir'){
-                                link.click() 
-                                return true
-                            }else{
-                                return false             
-                            }
+
+            let optionClicked = await util.page.evaluate(
+                ( activityLink ) => {
+                    activityLink.click()
+                    let idActivity = activityLink.id
+                    let optionsList = document.querySelectorAll('div[data-ownerid="'+idActivity+'"] ul a')
+                    for (const option of optionsList) {
+                        if( option.innerText == 'Excluir'){
+                            option.click()
+                            return true
                         }
-                    }else{
-                        return false
-                    }     
-                    
-                }, $activity
+                    }
+                    return false
+
+                }, $contextActivity
             )
-            
-            await console.log( findLink )
-            if( findLink ){
-                await util.page.waitForNavigation({waitUntil:'load'})
+            await console.log(optionClicked)
+            if( optionClicked ){
+                await util.page.waitFor('div.uiOverlayFooter button.layerConfirm', {visible:true,timeout:0})
+                await util.page.click('div.uiOverlayFooter button.layerConfirm')    
+                await util.page.waitFor(500)
+                
+                await util.page.reload({waitUntil:'load'})
             }else{
-                pos++
+                posFirstActivityClickable++
             }
+
+           
+            //seletor de botoes pra abrir a lista de opcoes editar
+            //table.uiGrid a[aria-label="Editar"]
             
-            
-            
-            
-            
-        
         }
 
+        await console.log('terminou o script !')
+
+    },
+
+    deleteAlbuns: async() => {
+        const urlProfilePhotos = 'https://www.facebook.com/profile.php?sk=photos_albums'
+        await Promise.all([
+            util.page.goto(urlProfilePhotos),
+            util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
+        ])
+
+        try {
+            await util.page.waitFor('td a[aria-label="Mais"]')
+        } catch (error) {
+            return 'Sem album pra deletar'
+        }
+        
+        $allMenuLinks = await util.page.$$('td a[aria-label="Mais"]')
+        const menuLinksLength = $allMenuLinks.length
+        let posFirstLinkClickable = 0
+        for (let index = 0; index < menuLinksLength; index++) {
+            $allMenuLinks = await util.page.$$('td a[aria-label="Mais"]')
+            
+
+            if( index === ( menuLinksLength - 1) && $allMenuLinks.length > 1 ){
+                index--
+            }  
+            const $linkContext = $allMenuLinks[posFirstLinkClickable]
+
+            if( !$linkContext ){
+                break
+            }
+
+            let linkClicked = util.page.evaluate(
+                ( btnForMenu )=>{
+                    btnForMenu.click()
+                    let idBtn = btnForMenu.id
+                    let $optionsInMenu = document.querySelectorAll( 'div[data-ownerid="'+idBtn+'"] a[role="menuitem"]' )
+                    for (const $opt of $optionsInMenu) {
+                        if($opt.innerText === 'Excluir álbum'){
+                            $opt.click()
+                            return true
+                        }
+                    }
+                }, $linkContext
+            )
+
+            if( linkClicked ){
+                await util.page.waitFor('div.uiOverlayFooter button.layerConfirm', {visible:true,timeout:0})
+                await util.page.click('div.uiOverlayFooter button.layerConfirm')    
+                await util.page.waitFor(500)
+                
+                await util.page.reload({waitUntil:'load'})
+            }else{
+                posFirstLinkClickable++
+            }
+            
+        }
+
+        await console.log('Albuns deletados com sucesso !')
+        //pega todos os botoes que abrem as opçoes dos albuns
+        //'td a[aria-label="Mais"]'
+
+        //pega a div de menu que corresponde ao botao
+        //div.[data-ownerid="u_0_2y"]
 
     },
     config: {  

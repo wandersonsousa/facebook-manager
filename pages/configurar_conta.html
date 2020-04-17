@@ -18,7 +18,7 @@
             <div class="toolbar-actions">
 
                 <div class="btn-group">
-                    <a class="btn btn-default" href="../index.html">
+                    <a class="btn btn-default" id="homeBtn" href="../index.html">
                         <span class="icon icon-home icon-text"></span>home
                     </a>
                 </div>
@@ -39,7 +39,7 @@
 
                         <div class="checkbox">
                             <label>
-                                <input id="doisFatores" type="checkbox"> A conta possui verificação de dois fatores ?
+                                <input id="doisFatores" type="checkbox"> Fazer Login Manual( verificação dois fatores)
                             </label>
                         </div> 
 
@@ -67,7 +67,13 @@
 
                         <div class="checkbox">
                             <label>
-                                <input id="deletarAtividade" type="checkbox"> Deletar Toda a Atividade ( Fotos, Álbuns, Desfazer amizades, e histórico )
+                                <input id="deletarAtividade" type="checkbox"> Deletar Fotos
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="deletarAlbuns" type="checkbox"> Deletar Álbuns
                             </label>
                         </div>
 
@@ -77,12 +83,6 @@
                                 <input id="alterarPrivacidade" type="checkbox"> Alterar definições de privacidade
                             </label>
                         </div>
-
-                        <!-- <div class="checkbox">
-                            <label>
-                                <input id="excluirFotosVideos" type="checkbox"> Excluir todas as fotos e vídeos ?
-                            </label>
-                        </div> -->
 
                         <div class="checkbox">
                             <label>
@@ -168,7 +168,10 @@
                 app.options.deleteAllMessages = true  
             }
             if( app.qs('#deletarAtividade').checked ){
-                app.options.deleteActivityPhotosAndAlbuns = true  
+                app.options.deleteActivityPhotos = true  
+            }
+            if(app.qs('#deletarAlbuns').checked){
+                app.options.deleteAlbuns = true
             }
             
             console.log( app.options )
@@ -176,7 +179,7 @@
           },
           cancelarConfig: (e) => {
               e.preventDefault()
-              console.log('apertou cancelar')
+              document.querySelector('#homeBtn').click()
           }
       }
     })

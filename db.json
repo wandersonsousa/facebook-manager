@@ -14,13 +14,18 @@
       "id": 2,
       "email": "wstutors1@gmail.com",
       "password": "Darksouls29"
+    },
+    {
+      "id": 3,
+      "email": "jusinildomel21@sapo.pt",
+      "password": "editado01"
     }
   ],
   "session": {
-    "email": "Wanderson3004@yandex.com",
-    "senha": "Darksouls29"
+    "email": "jusinildomel21@sapo.pt",
+    "senha": "editado01"
   },
-  "count": 3,
+  "count": 4,
   "settings": {
     "browserPath": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
   }

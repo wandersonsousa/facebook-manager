@@ -65,22 +65,26 @@
                             </label>
                         </div>
 
-                        <div class="checkbox">
-                            <label>
-                                <input id="deletarAtividade" type="checkbox"> Deletar Fotos
-                            </label>
-                        </div>
+                        
 
-                        <div class="checkbox">
-                            <label>
-                                <input id="deletarAlbuns" type="checkbox"> Deletar Álbuns
-                            </label>
-                        </div>
+                        
 
 
                         <div class="checkbox">
                             <label>
                                 <input id="alterarPrivacidade" type="checkbox"> Alterar definições de privacidade
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="deletarAtividade" type="checkbox"> Deletar Fotos
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox">
+                            <label>
+                                <input id="deletarAlbuns" type="checkbox"> Deletar Álbuns
                             </label>
                         </div>
 
@@ -176,6 +180,7 @@
             
             console.log( app.options )
             app.api(app.options)
+            app.options = {}
           },
           cancelarConfig: (e) => {
               e.preventDefault()

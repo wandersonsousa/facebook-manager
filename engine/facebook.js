@@ -91,8 +91,92 @@ const facebook = {
         await util.getElAndClickWait('#root > div > div > div:nth-child(2) > div._3l2- > div > div > button')
     },
 
+    deleteActivityPhotos: async() =>{
+        let urlDeleteAllMessages = 'https://www.facebook.com/profile.php?sk=photos_all'
+        await Promise.all(
+            [
+                util.page.goto(urlDeleteAllMessages),
+                util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
+            ]
+        )
 
-    deleteActivityPhotos:async()=>{
+        async function hasBtnToMenuDelete(){
+            try {
+                await util.page.waitFor('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]',{timeout:5000})
+                return true 
+            } catch (error) {
+                return false
+            }
+        }
+
+        async function hasInDom(sel){
+            try {
+                await util.page.waitFor(sel,{timeout:10000})
+                return true 
+            } catch (error) {
+                return false
+            }
+        }
+        async function hasInXDom(sel){
+            try {
+                await util.page.waitForXPath(sel, {timeout:10000})
+                return true 
+            } catch (error) {
+                return false
+            }
+        }
+
+        async function initDelete() {
+            if( await hasBtnToMenuDelete() ){
+                let $btnOpenMenu = await util.page.$('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]')
+                await $btnOpenMenu.click()
+
+                await clickInOptDeleteThisPhoto()
+            }else {
+                await console.log('Sem fotos para deletar !')
+
+            }  
+        }
+
+        async function clickInOptDeleteThisPhoto() {
+            if( await hasInDom('a[data-action-type="delete_photo"]') ){
+
+                let $btnDeletePhoto = await util.page.$('a[data-action-type="delete_photo"]')
+                await $btnDeletePhoto.click()
+                await clickInBtnConfirmDelete()
+
+            }else{
+                await console.log('opcao deletar foto nao encontrada')
+            }
+        }
+
+        async function clickInBtnConfirmDelete(){
+            if( await hasInXDom('//div[@role="dialog"]//button[contains(text(), "Excluir")]') ){
+                let [$btnConfirm] = await util.page.$x('//div[@role="dialog"]//button[contains(text(), "Excluir")]')
+                
+       
+                await $btnConfirm.click()
+                await util.page.waitFor(3000)
+
+                if(await hasInDom('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]') ){
+                    await initDelete()
+                }else{
+                    await console.log('Sem fotos para deletar')
+                }
+                
+            } else {
+                await console.log('Não encontrou Btn confirmar exlusao')
+            }
+        }
+
+        
+        await initDelete()
+
+        
+
+    },
+
+    deleteActivityPhotosDisabled:async()=>{
         const urlActivity = 'https://www.facebook.com/profile.php?sk=allactivity'
         await Promise.all([
             util.page.goto(urlActivity),
@@ -152,20 +236,32 @@ const facebook = {
         await console.log('terminou o script !')
 
     },
-
-    deleteAlbuns: async() => {
+    deleteAlbuns:async() => {
+        const urlProfilePhotos = 'https://www.facebook.com/profile.php?sk=photos_albums'
+        await Promise.all([
+            util.page.goto(urlProfilePhotos),
+            util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
+        ])      
+        try {
+            await util.page.waitFor('td a[aria-label="Mais"]', {timeout:10000})
+        } catch (error) {
+            return 'Sem album pra deletar'
+        }  
+    },
+    deleteAlbunsDISABLED: async() => {
         const urlProfilePhotos = 'https://www.facebook.com/profile.php?sk=photos_albums'
         await Promise.all([
             util.page.goto(urlProfilePhotos),
             util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
         ])
 
+        
         try {
             await util.page.waitFor('td a[aria-label="Mais"]')
         } catch (error) {
             return 'Sem album pra deletar'
         }
-        
+
         $allMenuLinks = await util.page.$$('td a[aria-label="Mais"]')
         const menuLinksLength = $allMenuLinks.length
         let posFirstLinkClickable = 0
@@ -369,45 +465,63 @@ const facebook = {
                 await facebook.clickAndWait($confirmAlteration)
             }
         },
-        deleteAllMessages: async () => {
-            let urlDeleteAllMessages = 'https://mbasic.facebook.com/messages'
-            
-            await util.page.goto( urlDeleteAllMessages, { waitUntil: 'networkidle2' } )
-            
-            let $all_messages_divs = await util.getElements('table td h3 a')
-            let msg_length = $all_messages_divs.length
-
-            for (let index = 0; index < msg_length; index++) {
-                await util.page.waitFor('table td h3 a', {visible:true, timeout:0})
-                $all_messages_divs = await util.page.$$('table td h3 a')
-
-                if( index === ( msg_length - 1) && $all_messages_divs.length > 1 ){
-                    index--
-                }                
-
-                await console.log($all_messages_divs)
-                //excluir sempre a primeira mensagem
-                const $msg = $all_messages_divs[0]
-                await $msg.click({delay:0.5})
-
-                await util.page.waitFor('input[name="delete"]')
-                const $btnDelete = await util.page.$('input[name="delete"]')
-                await $btnDelete.click( {delay:0.6} )
-
-               
-                await util.page.waitForXPath('//*[@id="root"]/div[1]/div[2]/a[2]')
-                const [$btnConfirmDelete] = await util.page.$x('//*[@id="root"]/div[1]/div[2]/a[2]')
-
-                await $btnConfirmDelete.click( {delay:0.7} )
-                await util.page.waitForNavigation()
+        deleteAllMessages:async()=>{
+            let urlDeleteAllMessages = 'https://www.facebook.com/messages'
+            await util.page.goto( urlDeleteAllMessages, { waitUntil: 'networkidle2', timeout:0 } )
+            await util.page.evaluate(
+                () => {
+                    function initDelete( v1 = 100 ){
+                        let v2 = v1 * 2
+                        let v3 = v2 * 2
+                    
+                        let $ = (sel) => {return document.querySelector(sel) }
+                    
+                        var 
+                            stepOne = function(){
+                    
+                                if (null !== $('div[aria-label="Ações de conversa"]')) {
+                                    $('div[aria-label="Ações de conversa"]').click();
+                                    //setTimeout(stepTwo, 100);
+                                    setTimeout(stepTwo, v1);
+                                } else {
+                                    console.log('There are no messages to delete');
+                                }
+                            },
+                            stepTwo = function(){
+                                var elements = document.evaluate('//span[text()="Excluir"]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                                for (var i = 0; i < elements.snapshotLength; i++) {
+                                    elements.snapshotItem(i).click();
+                                }
+                                //setTimeout(stepThree, 150);
+                                setTimeout(stepThree, v2);
+                            },
+                            stepThree = function(){
+                                let btnConfirm = document.evaluate('//div[@role="dialog"]//button[contains(text(), "Excluir")]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+                                btnConfirm.singleNodeValue.click()
+                                if (null !== $('div[aria-label="Ações de conversa"]')) {
+                                    //setTimeout(stepOne, 300);
+                                    setTimeout(stepOne, v3);
+                                } else {
+                                    console.log('No more messages to delete');
+                                }
+                            };
+                        
+                        console.log('Script launching');
+                        stepOne();
+                        
+                    }
+                    initDelete()
+                }
                 
-                
-                await util.gotoPage( urlDeleteAllMessages )
-            }
-        },
+            )
+        }
 
-    },
 
+
+
+
+
+    }
 }
 
 module.exports = facebook

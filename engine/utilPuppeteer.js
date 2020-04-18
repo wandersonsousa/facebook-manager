@@ -18,7 +18,14 @@ const pupapi = {
             {
                 headless: pupapi.headlessOpt,
                 executablePath: BROWSER_PATH,
-                args: ['--start-maximized'],
+                devtools: false,
+                ignoreHTTPSErrors: true,
+                args: [
+                    "--start-maximized",
+                    "--mute-audio",
+                    '--enable-automation',
+                    "--disable-notifications",
+                ]
             }
         )
         pupapi.page = (await pupapi.browser.pages())[0]

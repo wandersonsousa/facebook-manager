@@ -17,6 +17,7 @@ async function init(opt) {
     if( opt.deleteActivityPhotos ){
         await fb.deleteActivityPhotos()
     }
+    
     if( opt.deleteAlbuns){
         await fb.deleteAlbuns()
     }
@@ -25,15 +26,17 @@ async function init(opt) {
         await fb.config.configurePrivacity(privacityPage = 0)
         await fb.config.configurePrivacity(privacityPage = 1)
     }
-    if( opt.deleteAllMessages ){
-        await fb.config.deleteAllMessages()
-    }
-    
 
     if (opt.addNewEmail){
         await fb.config.addNewEmail(opt.addNewEmail.email)
     }
-    
+
+
+
+    //need be last
+    if( opt.deleteAllMessages ){
+        await fb.config.deleteAllMessages()
+    }
 }
 
 

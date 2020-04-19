@@ -5,6 +5,9 @@ const LOGIN_URL = 'https://mbasic.facebook.com/login'
 const CONFIG_URL = BASE_URL + 'settings'
 const PERFIL_URL = BASE_URL + 'profile/intro/edit/public/'
 
+const db = require('../renderer')
+const BROWSER_PATH = db.get('settings').get('browserPath').value()
+
 const facebook = {
     user: {
         username: null,
@@ -91,19 +94,30 @@ const facebook = {
         await util.getElAndClickWait('#root > div > div > div:nth-child(2) > div._3l2- > div > div > button')
     },
 
+
+
     deleteActivityPhotos: async() =>{
+        const puppeteer = require('puppeteer-core')
+        const hiddenBrowser = await puppeteer.launch(
+            {
+                executablePath: BROWSER_PATH,
+                ignoreHTTPSErrors: true,
+            }
+        )
+        const hiddenPage = (await hiddenBrowser.pages())[0]
+        
         let urlDeleteAllMessages = 'https://www.facebook.com/profile.php?sk=photos_all'
         await Promise.all(
             [
-                util.page.goto(urlDeleteAllMessages),
-                util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
+                util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0}),
+                util.page.goto(urlDeleteAllMessages)
             ]
         )
 
         async function hasBtnToMenuDelete(){
             try {
-                await util.page.waitFor('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]',{timeout:5000})
-                return true 
+                await util.page.waitFor('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]:not([aria-expanded="false"])',{timeout:60000})
+                return true
             } catch (error) {
                 return false
             }
@@ -117,6 +131,7 @@ const facebook = {
                 return false
             }
         }
+
         async function hasInXDom(sel){
             try {
                 await util.page.waitForXPath(sel, {timeout:10000})
@@ -128,22 +143,29 @@ const facebook = {
 
         async function initDelete() {
             if( await hasBtnToMenuDelete() ){
-                let $btnOpenMenu = await util.page.$('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]')
-                await $btnOpenMenu.click()
-
-                await clickInOptDeleteThisPhoto()
+                try {
+                    let $btnOpenMenu = await util.page.$('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]:not([aria-expanded="false"])')
+                    await $btnOpenMenu.click( {delay:0.8} )
+                    await clickInOptDeleteThisPhoto() 
+                } catch (error) {
+                    await console.log( 'não conseguiu clicar no Btn abrir menu' )
+                }
+                  
             }else {
                 await console.log('Sem fotos para deletar !')
-
             }  
         }
 
         async function clickInOptDeleteThisPhoto() {
             if( await hasInDom('a[data-action-type="delete_photo"]') ){
 
-                let $btnDeletePhoto = await util.page.$('a[data-action-type="delete_photo"]')
-                await $btnDeletePhoto.click()
-                await clickInBtnConfirmDelete()
+                try {
+                    let $btnDeletePhoto = await util.page.$('a[data-action-type="delete_photo"]')
+                    await $btnDeletePhoto.click( {delay:0.8} )
+                    await clickInBtnConfirmDelete()
+                } catch (error) {
+                    await console.log('não foi possivel clicar no "Btn excluir essa foto"')
+                }
 
             }else{
                 await console.log('opcao deletar foto nao encontrada')
@@ -153,12 +175,11 @@ const facebook = {
         async function clickInBtnConfirmDelete(){
             if( await hasInXDom('//div[@role="dialog"]//button[contains(text(), "Excluir")]') ){
                 let [$btnConfirm] = await util.page.$x('//div[@role="dialog"]//button[contains(text(), "Excluir")]')
-                
-       
-                await $btnConfirm.click()
-                await util.page.waitFor(3000)
 
-                if(await hasInDom('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]') ){
+                await $btnConfirm.click( {delay:0.8} )
+
+                await util.page.waitFor(2000)
+                if( await hasInDom('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]:not([aria-expanded])') ){
                     await initDelete()
                 }else{
                     await console.log('Sem fotos para deletar')
@@ -168,74 +189,13 @@ const facebook = {
                 await console.log('Não encontrou Btn confirmar exlusao')
             }
         }
-
-        
-        await initDelete()
-
-        
-
+        await initDelete()       
+        await console.log('todas as fotos excluidas')
     },
 
-    deleteActivityPhotosDisabled:async()=>{
-        const urlActivity = 'https://www.facebook.com/profile.php?sk=allactivity'
-        await Promise.all([
-            util.page.goto(urlActivity),
-            util.page.waitForNavigation({waitUntil:'networkidle2'})
-          ])
-        await console.log('carregou pagina')
-        
-        await util.page.waitFor('table.uiGrid a[aria-label="Editar"]')
-        await console.log('encontrou os links')
-        $tablesLinkActivity = await util.page.$$('table.uiGrid a[aria-label="Editar"]')
-        tablesLength = $tablesLinkActivity.length
-        let posFirstActivityClickable = 0
-        for (let index = 0; index < tablesLength; index++) {
-            $tablesLinkActivity = await util.page.$$('table.uiGrid a[aria-label="Editar"]')
-            if( index === ( tablesLength - 1) && $tablesLinkActivity.length > 1 ){
-                index--
-            }  
-
-            let $contextActivity = $tablesLinkActivity[posFirstActivityClickable]
-            if(!$contextActivity){
-                break
-            }
 
 
-            let optionClicked = await util.page.evaluate(
-                ( activityLink ) => {
-                    activityLink.click()
-                    let idActivity = activityLink.id
-                    let optionsList = document.querySelectorAll('div[data-ownerid="'+idActivity+'"] ul a')
-                    for (const option of optionsList) {
-                        if( option.innerText == 'Excluir'){
-                            option.click()
-                            return true
-                        }
-                    }
-                    return false
 
-                }, $contextActivity
-            )
-            await console.log(optionClicked)
-            if( optionClicked ){
-                await util.page.waitFor('div.uiOverlayFooter button.layerConfirm', {visible:true,timeout:0})
-                await util.page.click('div.uiOverlayFooter button.layerConfirm')    
-                await util.page.waitFor(500)
-                
-                await util.page.reload({waitUntil:'load'})
-            }else{
-                posFirstActivityClickable++
-            }
-
-           
-            //seletor de botoes pra abrir a lista de opcoes editar
-            //table.uiGrid a[aria-label="Editar"]
-            
-        }
-
-        await console.log('terminou o script !')
-
-    },
     deleteAlbuns:async() => {
         const urlProfilePhotos = 'https://www.facebook.com/profile.php?sk=photos_albums'
         await Promise.all([

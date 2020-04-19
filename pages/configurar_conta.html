@@ -76,21 +76,28 @@
                             </label>
                         </div>
 
-                        <div class="checkbox">
-                            <label>
-                                <input id="deletarAtividade" type="checkbox"> Deletar Fotos
-                            </label>
-                        </div>
+                       
                         
+                        
+
                         <div class="checkbox">
                             <label>
-                                <input id="deletarAlbuns" type="checkbox"> Deletar Álbuns
+                                <input id="excluirMensagens" type="checkbox"> Excluir todas as mensagens
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
-                                <input id="excluirMensagens" type="checkbox"> Excluir todas as mensagens ?
+                                <input v-on:click="showAlert" id="deletarAtividade" type="checkbox"> Deletar Fotos
+                                <br>
+                                <i v-if="showAlertText">(AVISO)Não coloque o mouse sobre a página do browser nessa etapa <button v-on:click="hiddenAlertText" class="btn btn-positive">entendi</button></i>
+                                
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="deletarAlbuns" type="checkbox"> Deletar Álbuns
                             </label>
                         </div>
 
@@ -114,9 +121,11 @@
       el: '#app',
       data: {
         showFormatDiv:false,
+        showAlertText: false,
         options:{},
         db: require('../renderer.js'),
         api: require('../engine/configureAccount.js'),
+        userLogged: false
 
       },
       methods: {
@@ -133,9 +142,20 @@
                 app.showFormatDiv = false
             }  
           },
+          showAlert:(e)=>{
+            if(e.target.checked){
+                app.showAlertText = true
+            }else{
+                app.showAlertText = false
+            }
+          },
+          hiddenAlertText: (e) => {
+            e.preventDefault()
+            app.showAlertText = false
+          },
           analisarRespostas: (e) => {
             e.preventDefault()
-            if( app.options.login ){
+            if( app.userLogged ){
                 app.options.openNewPage = true
             }else {
                 app.options.login = {}
@@ -181,6 +201,7 @@
             console.log( app.options )
             app.api(app.options)
             app.options = {}
+            app.userLogged = true
           },
           cancelarConfig: (e) => {
               e.preventDefault()

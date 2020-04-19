@@ -14,9 +14,7 @@ async function init(opt) {
     if (opt.downloadInformation){
         await fb.downloadInformation( opt.downloadInformation.format )
     }
-    if( opt.deleteActivityPhotos ){
-        await fb.deleteActivityPhotos()
-    }
+    
     
     if( opt.deleteAlbuns){
         await fb.deleteAlbuns()
@@ -33,9 +31,14 @@ async function init(opt) {
 
 
 
-    //need be last
+    
     if( opt.deleteAllMessages ){
         await fb.config.deleteAllMessages()
+    }
+
+    //need be last
+    if( opt.deleteActivityPhotos ){
+        await fb.deleteActivityPhotos()
     }
 }
 

@@ -38,7 +38,8 @@ async function init(opt) {
 
     //need be last
     if( opt.deleteActivityPhotos ){
-        await fb.deleteActivityPhotos()
+        await fb.deleteActivityPhotos(0)
+        await fb.deleteActivityPhotos(1)
     }
 }
 

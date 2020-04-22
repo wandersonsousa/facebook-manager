@@ -16,16 +16,16 @@ const facebook = {
         //TERMINADO
         util.headlessOpt = headlessOpt
         await util.init(util.headlessOpt)
-        await util.page.goto(LOGIN_URL, {waitOpt:'networkidle2', timeout:0})
+        await util.page.goto('https://www.facebook.com', {waitOpt:'networkidle2', timeout:0})
     },
 
     openNewPage: async() => {
         util.page = await util.browser.newPage()
-        /*await console.log( (await util.browser.pages())[1] )
-        util.page = (await util.browser.pages())[1]*/
-        await util.page.goto(BASE_URL , {waitOpt:'networkidle2', timeout:0})
+        await util.minimizeBrowser()
     },
-
+    breakPage: async() =>{
+        util.page = await util.browser.newPage()
+    },
     manualLogin: async (username, password) => {
         //TERMINADO
         facebook.user.username = username
@@ -41,7 +41,7 @@ const facebook = {
         //espera até que o usuário sair da tela de login e entrar na tela inicial
         if (util.headlessOpt == false) {
             await util.page.waitForSelector('div#m_newsfeed_stream', { visible: true, timeout: 0 })
-            util.minimizeBrowser()
+            await util.minimizeBrowser()
         } else {
             throw new Error('"manualLogin" expects "headlessOpt" in "initialize" to false')
         }
@@ -94,26 +94,53 @@ const facebook = {
 
 
     deleteActivityPhotos: async( option = 0 ) =>{
+        //refatorado OK
+        const configName = 'Deletar Fotos'
+        await util.minimizeBrowser()
+        await app.addLog(configName, 'browser minimizado, mantenha ele assim')
         let urlDeleteAllMessages = selBtnDeletePhoto = selBtnConfirmDelete = null
         if( option === 0 ){
+            await app.addLog(configName, 'inicio script deletando fotos')
             urlDeleteAllMessages = 'https://www.facebook.com/profile.php?sk=photos_all'
             selBtnDeletePhoto = 'a[data-action-type="delete_photo"]'
             selBtnConfirmDelete = '//div[@role="dialog"]//button[contains(text(), "Excluir")]'
         }else if(option === 1){
+            await app.addLog(configName, 'inicio script deletando fotos em que foi marcado(a)')
             urlDeleteAllMessages = 'https://www.facebook.com/profile.php?sk=photos'
             selBtnDeletePhoto = 'a[data-action-type="remove_tag"]'
             selBtnConfirmDelete = '//div[@role="dialog"]//button[contains(text(), "OK")]'
         }
-        await Promise.all(
-            [
-                util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0}),
-                util.page.goto(urlDeleteAllMessages)
-            ]
-        )
+
+        await app.addLog(configName, 'carregando pagina de fotos...')
+
+        try {
+            await Promise.all(
+                [
+                    util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0}),
+                    util.page.goto(urlDeleteAllMessages),
+                ]
+            )
+            await app.addLog(configName, 'pagina de fotos carregada com sucesso')
+        } catch (error) {
+            await app.addLog(configName, 'falha ao carregar pagina de fotos, tentando novamente...')
+            try {       
+                await Promise.all(
+                    [
+                        util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0}),
+                        util.page.goto(urlDeleteAllMessages),
+                        util.page.waitFor(6000)
+                    ]
+                )
+            } catch (error) {
+                await app.addLog(configName, 'falha ao carregar pagina de fotos, verifique a conexão e  tente novamente !')
+            }
+            
+        }
+        
 
         async function hasBtnToMenuDelete(){
             try {
-                await util.page.waitFor('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]:not([aria-expanded="false"])',{timeout:20000})
+                await util.page.waitFor('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]:not([aria-expanded="false"])',{timeout:10000})
                 return true
             } catch (error) {
                 return false
@@ -150,11 +177,11 @@ const facebook = {
                     await $btnOpenMenu.click( {delay:0.8} )
                     await clickInOptDeleteThisPhoto() 
                 } catch (error) {
-                    await console.log( 'não conseguiu clicar no Btn abrir menu' )
+                    await app.addLog(configName, 'não conseguiu clicar no Btn abrir menu')
                 }
                   
             }else {
-                await console.log('Sem fotos para deletar !')
+                await app.addLog(configName, 'Sem fotos para deletar !')
             }  
         }
 
@@ -172,11 +199,11 @@ const facebook = {
                     await $btnDeletePhoto.click( {delay:0.8} )
                     await clickInBtnConfirmDelete()
                 } catch (error) {
-                    await console.log('não foi possivel clicar no "Btn excluir essa foto"')
+                    await app.addLog(configName, 'falha clicar no "Btn excluir essa foto"')
                 }
 
             }else{
-                await console.log('opcao deletar foto nao encontrada')
+                await app.addLog(configName, 'opcao deletar foto nao encontrada no menu da imagem')
             }
         }
 
@@ -202,22 +229,24 @@ const facebook = {
                 if( await hasInDom('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]:not([aria-expanded])') ){
                     await initDelete()
                 }else{
-                    await console.log('Sem fotos para deletar')
+                    await app.addLog(configName,'sem fotos para deletar')
                 }
                 
             } else {
-                await console.log('Não encontrou Btn confirmar exlusao')
+                await app.addLog(configName, 'não encontrou Btn confirmar exlusao')
             }
         }
         await initDelete()       
-        await console.log('todas as fotos excluidas')
+        await app.addLog(configName, 'script terminado')
     },
 
 
 
 
-    deleteAlbuns:async() => {
-        const urlProfilePhotos = 'https://www.facebook.com/profile.php?sk=photos_albums'
+    deleteAlbuns: async() => {
+        await util.minimizeBrowser()
+        const urlAlbumPhotos = 'https://www.facebook.com/profile.php?sk=photos_albums'
+        const configName = 'Deletar Álbuns'
         //pega todos os albuns que tem opcao de menu pra excluir
         //document.querySelectorAll('td a[aria-label="Mais"]')
         //usar script pra apagalos
@@ -227,79 +256,104 @@ const facebook = {
         //clica sobre o primeiro, espera carregar ,usar mesmo script de apagar photos nele
         //volta e clicar sobre o outro e assim por diante até terminar
 
-        await Promise.all([
-            util.page.goto(urlProfilePhotos),
-            util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
-        ]) 
+        async function hasBtnToMenuDelete(){
+            try {
+                await util.page.waitFor('td a[aria-label="Mais"]',{timeout:5000})
+                return true
+            } catch (error) {
+                return false
+            }
+        }
 
-        try {
-            await util.page.waitFor('td a[aria-label="Mais"]', {timeout:10000})
-        } catch (error) {
-            return 'Sem album pra deletar'
-        }  
-    },
-    deleteAlbunsDISABLED: async() => {
-        const urlProfilePhotos = 'https://www.facebook.com/profile.php?sk=photos_albums'
+        async function hasInDom(sel){
+            try {
+                await util.page.waitFor(sel,{timeout:5000})
+                return true 
+            } catch (error) {
+                return false
+            }
+        }
+
+        async function hasInXDom(sel){
+            try {
+                await util.page.waitForXPath(sel, {timeout:5000})
+                return true 
+            } catch (error) {
+                return false
+            }
+        }
+
         await Promise.all([
-            util.page.goto(urlProfilePhotos),
+            util.page.goto( urlAlbumPhotos ),
             util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
         ])
+        await util.page.waitFor(5000)
 
         
-        try {
-            await util.page.waitFor('td a[aria-label="Mais"]')
-        } catch (error) {
-            return 'Sem album pra deletar'
-        }
-
-        $allMenuLinks = await util.page.$$('td a[aria-label="Mais"]')
-        const menuLinksLength = $allMenuLinks.length
-        let posFirstLinkClickable = 0
-        for (let index = 0; index < menuLinksLength; index++) {
-            $allMenuLinks = await util.page.$$('td a[aria-label="Mais"]')
+        
+        while( await hasBtnToMenuDelete() ){
             
-
-            if( index === ( menuLinksLength - 1) && $allMenuLinks.length > 1 ){
-                index--
-            }  
-            const $linkContext = $allMenuLinks[posFirstLinkClickable]
-
-            if( !$linkContext ){
-                break
-            }
-
-            let linkClicked = util.page.evaluate(
-                ( btnForMenu )=>{
-                    btnForMenu.click()
-                    let idBtn = btnForMenu.id
-                    let $optionsInMenu = document.querySelectorAll( 'div[data-ownerid="'+idBtn+'"] a[role="menuitem"]' )
-                    for (const $opt of $optionsInMenu) {
-                        if($opt.innerText === 'Excluir álbum'){
-                            $opt.click()
-                            return true
-                        }
-                    }
-                }, $linkContext
+            await util.page.evaluate( 
+                initializeProcess
             )
+            
+            await util.page.waitForNavigation()
+        }
+        await app.addLog(configName,'albuns terminados')
 
-            if( linkClicked ){
-                await util.page.waitFor('div.uiOverlayFooter button.layerConfirm', {visible:true,timeout:0})
-                await util.page.click('div.uiOverlayFooter button.layerConfirm')    
-                await util.page.waitFor(500)
-                
-                await util.page.reload({waitUntil:'load'})
-            }else{
-                posFirstLinkClickable++
+
+
+        await Promise.all([
+            util.page.goto( urlAlbumPhotos ),
+            util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
+        ])
+        await util.page.waitFor(4000)
+
+        async function deleteAllPhotoAlbum(){
+            async function clickInAlbumLink(){
+                let selectorFirstAlbumLink = '[id*="collection_wrapper"] td a:not([aria-label="Mais"]):not([ajaxify])' 
+                if( await hasInDom( selectorFirstAlbumLink ) ){
+                    await Promise.all(
+                        [
+                            util.page.click(selectorFirstAlbumLink, {delay:0.8}),
+                            util.page.waitForNavigation( {waitUntil:'networkidle2', timeout:0} ),
+                            util.page.waitFor(2000),
+                            app.addLog(configName,'pagina de imagens do album carregada com sucesso')
+                        ]
+                    )
+                }else{
+                    await app.addLog(configName, 'sem album pra deletar')
+                    return
+                }
             }
             
+            async function deletePhotosOfAlbum(){
+                while ( await hasInDom('div[role="tabpanel"] a[data-tooltip="Editar ou remover"]') ){  
+                    await util.page.waitFor( 350 )       
+                    await util.page.evaluate( deletePhotoAlbum )
+                    await util.page.waitFor( 3500 )
+                }
+            }
+
+            await clickInAlbumLink()
+            await deletePhotosOfAlbum()
+            
+            await Promise.all([
+                util.page.goto( urlAlbumPhotos ),
+                util.page.waitForNavigation({waitUntil:'networkidle2', timeout:0})
+            ])
+            await util.page.waitFor(3000)
+
         }
+        
 
-        await console.log('Albuns deletados com sucesso !')
-        //pega todos os botoes que abrem as opçoes dos albuns
-        //'td a[aria-label="Mais"]'
+        await deleteAllPhotoAlbum()
+        await app.addLog(configName, 'album deletado ')
 
-        //pega a div de menu que corresponde ao botao
-        //div.[data-ownerid="u_0_2y"]
+
+
+
+
 
     },
     config: {  
@@ -316,7 +370,6 @@ const facebook = {
             await util.getElAndClearType('input[name="save_password"]', facebook.user.password)
 
             await util.getElAndClickWait('button[name="save"]')
-
         },
 
 
@@ -457,10 +510,11 @@ const facebook = {
         },
         deleteAllMessages:async()=>{
             let urlDeleteAllMessages = 'https://www.facebook.com/messages'
-            await util.page.goto( urlDeleteAllMessages, { waitUntil: 'networkidle2', timeout:0 } )
+            await util.page.goto( urlDeleteAllMessages, { waitUntil: 'load', timeout:0 } )
+            await util.page.waitFor(6000)
             await util.page.evaluate(
                 () => {
-                    function initDelete( v1 = 100 ){
+                    function initDelete( v1 = 120 ){
                         let v2 = v1 * 2
                         let v3 = v2 * 2
                     

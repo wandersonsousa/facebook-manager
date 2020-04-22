@@ -5,7 +5,7 @@
  * @author Wanderson Sousa <wandersonsousa3004@gmail.com>
  */
 
-function initDelete(v1 = 100) {
+function initDelete(v1 = 150) {
     let v2 = v1 * 2
     let v3 = v2 * 2
 
@@ -16,7 +16,6 @@ function initDelete(v1 = 100) {
 
             if (null !== $('div[aria-label="Ações de conversa"]')) {
                 $('div[aria-label="Ações de conversa"]').click();
-                //setTimeout(stepTwo, 100);
                 setTimeout(stepTwo, v1);
             } else {
                 console.log('There are no messages to delete');
@@ -44,7 +43,7 @@ function initDelete(v1 = 100) {
         };
 
     console.log('Script launching');
-    stepOne();
+    stepOne()
 
 }
 

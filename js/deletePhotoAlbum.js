@@ -6,12 +6,12 @@
  */
 
 
-function initDelete(v = 300) {
+function deletePhotoAlbum(v = 1000) {
     let $ = (sel) => { return document.querySelector(sel) }
 
     function findBtnToMenuDelete(){
 
-        let btnOpenMenu = $('div[role="tabpanel"] .fbStarGrid li.fbPhotoStaulrGridElement a[data-tooltip="Editar ou remover"]')
+        let btnOpenMenu = $('div[role="tabpanel"] a[data-tooltip="Editar ou remover"]')
         if( btnOpenMenu !== null ){
             btnOpenMenu.click()
             setTimeout( clickInOptDeleteThisPhoto , v)
@@ -22,43 +22,31 @@ function initDelete(v = 300) {
 
     function clickInOptDeleteThisPhoto(){
         let btnDeletePhoto = $('a[data-action-type="delete_photo"]')
-        
+        btnDeletePhoto = btnDeletePhoto?btnDeletePhoto:$('a[data-action-type="delete_video"]')
+
         if( btnDeletePhoto ){
             btnDeletePhoto.click()
-            setTimeout( clickInBtnConfirmDelete, v )
+            setTimeout( clickInBtnConfirmDelete, v * 2 )
         }else{
             console.log('Not found action delete photo')
         }
-        
-
-        
     }
 
     function clickInBtnConfirmDelete() {
-
         let btnConfirm = document.evaluate('//div[@role="dialog"]//button[contains(text(), "Excluir")]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-        
+        let btnConfirmVideo = document.evaluate('//div[@role="dialog"]//button[contains(text(), "Confirmar")]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+
+        btnConfirm = btnConfirm.singleNodeValue ? btnConfirm.singleNodeValue : btnConfirmVideo.singleNodeValue
+
         if(btnConfirm){
-            btnConfirm.singleNodeValue.click()
-
-            if (null !== $('div[role="tabpanel"] ul.fbStarGrid li.fbPhotoStarGridElement a[data-tooltip="Editar ou remover"]')) {
-                setTimeout( findBtnToMenuDelete, v )
-            } else {
-                console.log('No more photos to delete')
-            }
-
+            btnConfirm.click()
         }else{
             console.log('Not Found Btn confirm role dialog')
-        }    
-
-        
+        }      
     }
-
 
     findBtnToMenuDelete()
     
 }
 
 
-
-module.exports = initDelete

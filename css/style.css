@@ -28,6 +28,10 @@ a{
     text-decoration: none;
 }
 
-[v-cloak] > * {
+.item-log {
+    padding:0px;
+}
+
+[v-cloak] .window-content {
      display:none;
 }

@@ -6,11 +6,13 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/photon.css">
     <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/deleteAlbums.js"></script>
+    <script src="../js/deletePhotoAlbum.js"></script>
 
 </head>
 
 <body>
-    <div class="window">
+    <div class="window" id="app" v-cloak>
 
         <header class="toolbar toolbar-header">
             <h1 class="title"><strong>Configurar Conta</strong></h1>
@@ -29,12 +31,55 @@
                     </a>
                 </div>
             </div>
+
+            <div class="tab-group" id="tab-group-area">
+
+                    <div v-on:click="showConfig" class="tab-item active">
+                        Configuração
+                    </div>
+
+                    <div v-on:click="showLog" class="tab-item">
+                        Área de Log
+                    </div>
+
+            </div>
+
         </header>
 
         <div class="window-content">
-            <div class="pane-group">
-                <div class="pane text-center" id="app" v-cloak>
+        
 
+            <div class="pane-group">
+                
+                <div v-show="showLogCondition" class="pane text-center" id="log_area" >
+                    <ul class="list-group">
+                        <li class="list-group-header">
+                            <button v-on:click="clearLog" class="btn btn-primary"> <strong>Limpar log</strong> </button>
+
+                            <template v-if="pausedLogCondition">
+                                <button  v-on:click="pauseLog" class="btn btn-primary" > 
+                                <strong>Continuar log</strong> </button>
+                            </template>
+                            <template v-else>
+                                <button v-on:click="pauseLog" class="btn btn-primary" > 
+                                <strong>Pausar log</strong> </button>
+                            </template>
+                            
+
+                        </li>
+
+                        <li class="list-group-item  item-log" v-for="singleLog in logData">
+
+                            <div class="media-body">
+                                <strong>{{ singleLog.configName }}</strong>
+                                <p>{{ singleLog.logText }}</p>
+                            </div>
+
+                        </li>
+                     </ul>
+                </div>
+
+                <div v-show="showConfigCondition" class="pane text-center"> 
                     <form action="#">
 
                         <div class="checkbox">
@@ -103,11 +148,18 @@
 
                         <div class="form-actions">
                             
-                            <button v-on:click="analisarRespostas" id="iniciarConfig" class="btn btn-form btn-primary">iniciar</button>
+                            <button v-on:click="analisarRespostas" id="iniciarConfig" class="btn btn-form btn-primary">iniciar</button>                        
+                            
+                            <button v-on:click="pararBot" id="pararEtapa" class="btn btn-form btn-default">parar Bot atual</button>
 
-                            <button v-on:click="cancelarConfig" id="cancelarConfig" class="btn btn-form btn-negative">cancelar</button>
+                            <button v-on:click="cancelarConfig" id="cancelarConfig" class="btn btn-form btn-negative">cancelar</button>       
+                            
+                        </div>
 
-                          </div>
+           
+                           
+
+                        
                     </form>
 
                 </div>
@@ -120,8 +172,12 @@
     var app = new Vue({
       el: '#app',
       data: {
+        logData: [ {configName:'core', logText:'Log Iniciado !'} ],
         showFormatDiv:false,
         showAlertText: false,
+        showConfigCondition:true,
+        showLogCondition:false,
+        pausedLogCondition: false,
         options:{},
         db: require('../renderer.js'),
         api: require('../engine/configureAccount.js'),
@@ -134,6 +190,11 @@
           },
           qsAll:(selector)=> {
             return document.querySelectorAll(selector)
+          },
+          addLog(configName, logText){
+            if( !app.pausedLogCondition ){
+                app.logData.unshift( {configName:configName, logText:logText} )  
+            }
           },
           showFormat: (e)=>{
             if(e.target.checked){
@@ -148,6 +209,34 @@
             }else{
                 app.showAlertText = false
             }
+          },
+          showConfig:(e)=>{
+              const $tabGroup = document.querySelectorAll('#tab-group-area .tab-item')
+              for($tab of $tabGroup ){
+                  $tab.className = 'tab-item'
+              }
+              e.target.classList.add('active')
+              app.showConfigCondition = true
+              app.showLogCondition = false
+          },
+          showLog:(e) => {
+              const $tabGroup = document.querySelectorAll('#tab-group-area .tab-item')
+              for($tab of $tabGroup ){
+                  $tab.className = 'tab-item'
+              }
+              e.target.classList.add('active')
+              app.showConfigCondition = false
+              app.showLogCondition = true
+          },
+          clearLog: (e) => {
+            app.logData = []
+          },
+          pauseLog: (e) => {
+            app.pausedLogCondition = app.pausedLogCondition?false:true
+          },
+          pararBot: (e)=>{
+            e.preventDefault()
+            app.api(false, true)
           },
           hiddenAlertText: (e) => {
             e.preventDefault()

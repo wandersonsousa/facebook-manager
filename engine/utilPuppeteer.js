@@ -8,18 +8,20 @@ const pupapi = {
     page: null,
     waitOpt: 'networkidle2',
     options: {visible:true, timeout:0},
-    puppeteer:puppeteer,
+    puppeteer: puppeteer,
 
     init: async (headlessOpt) => {
         //instancia o browser e inicia uma page, ambas sao variaveis globais da api
         pupapi.headlessOpt = headlessOpt
-        
+        //%userprofile%\\AppData\\Local\\Chromium\\User Data'
         pupapi.browser = await puppeteer.launch(
             {
                 headless: pupapi.headlessOpt,
                 executablePath: BROWSER_PATH,
                 devtools: false,
                 ignoreHTTPSErrors: true,
+                userDataDir:'../perfilDoPrograma',
+    
                 args: [
                     "--start-maximized",
                     "--mute-audio",

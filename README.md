@@ -1,45 +1,19 @@
-# electron-quick-start
+# Facebook Manager
 
-**Clone and run for a quick way to see Electron in action.**
+**Automação de Facebook**
 
-This is a minimal Electron application based on the [Quick Start Guide](https://electronjs.org/docs/tutorial/quick-start) within the Electron documentation.
+Esse projeto foi criado com o intuito de ajudar profissionais ou usuários comuns que usam do Facebook como instrumento de trabalho, automatizando tarefas trabalhosas, na configuração e adicionando alguns recursos que não são disponibilizados no próprio sistema do Facebook, o programa foi projetado para ser de simples uso, pra isso póssui uma interface limpa e coesa para que se tenha uma experiência de uso agrádavel.
 
-**Use this app along with the [Electron API Demos](https://electronjs.org/#get-started) app for API code examples to help you get started.**
+**Algumas Funções São: **
+- `Delete todas as Fotos de seu Facebook` - O bot vai fazer procurar e limpeza de todas as suas imagens do facebook, incluido as que não são excluidas por extenções comumente usadas.
+- `Delete todos os Álbuns de seu Facebook` - O bot vai fazer procurar e limpeza de todos os álbuns armazenados no facebook, incluido os que não são excluidos por extenções comumente usadas, como o álbum de dispositivos móveis, e álbuns ocultos.
+- `Automatizar Configuração de Privacidade da conta` - O bot vai automatizar o processo de configuração da privacidade em sua conta, de acordo com a configuração que você escolheu previamente no programa.
+- `Automatizar Adicionar Novo Nome` - O bot vai automatizar o processo de configuração onde se adiciona um novo nome de usuário a conta, de acordo com a configuração que você escolheu previamente no programa, inclusive existe a possibilidade de mudar seu nome através do formulário da página de ajuda do Facebook, enviando um documento para o Sistema.
+- `Automatizar Adicionar Telefone` - O bot vai automatizar o processo de configuração onde se adiciona um novo telefone a sua conta, configurável, totalmente atráves da interface do programa.
+- `Automatizar Baixar Dados da Conta` - O bot vai automatizar o processo de configuração onde se baixa os dados de sua conta, podendo escolher o formato a ser baixado na interface.
 
-A basic Electron application needs just these files:
+## Para usar caso seja um desenvolvedor
 
-- `package.json` - Points to the app's main file and lists its details and dependencies.
-- `main.js` - Starts the app and creates a browser window to render HTML. This is the app's **main process**.
-- `index.html` - A web page to render. This is the app's **renderer process**.
+Clone esse repositório, vá para a pasta de arquivos do programa, e digite no terminal **npm install**, e logo após **npm start**, isso vai iniciar a interface do programa.
 
-You can learn more about each of these components within the [Quick Start Guide](https://electronjs.org/docs/tutorial/quick-start).
 
-## To Use
-
-To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
-
-```bash
-# Clone this repository
-git clone https://github.com/electron/electron-quick-start
-# Go into the repository
-cd electron-quick-start
-# Install dependencies
-npm install
-# Run the app
-npm start
-```
-
-Note: If you're using Linux Bash for Windows, [see this guide](https://www.howtogeek.com/261575/how-to-run-graphical-linux-desktop-applications-from-windows-10s-bash-shell/) or use `node` from the command prompt.
-
-## Resources for Learning Electron
-
-- [electronjs.org/docs](https://electronjs.org/docs) - all of Electron's documentation
-- [electronjs.org/community#boilerplates](https://electronjs.org/community#boilerplates) - sample starter apps created by the community
-- [electron/electron-quick-start](https://github.com/electron/electron-quick-start) - a very basic starter Electron app
-- [electron/simple-samples](https://github.com/electron/simple-samples) - small applications with ideas for taking them further
-- [electron/electron-api-demos](https://github.com/electron/electron-api-demos) - an Electron app that teaches you how to use Electron
-- [hokein/electron-sample-apps](https://github.com/hokein/electron-sample-apps) - small demo apps for the various Electron APIs
-
-## License
-
-[CC0 1.0 (Public Domain)](LICENSE.md)

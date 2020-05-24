@@ -1,5 +1,7 @@
 # Facebook Manager
 
+![alt](facebookManagerPrint.jpg)
+
 **Automação de Facebook**
 
 Esse projeto foi criado com o intuito de ajudar profissionais ou usuários comuns que usam do Facebook como instrumento de trabalho, automatizando tarefas trabalhosas, na configuração e adicionando alguns recursos que não são disponibilizados no próprio sistema do Facebook, o programa foi projetado para ser de simples uso, pra isso póssui uma interface limpa e coesa para que se tenha uma experiência de uso agrádavel.

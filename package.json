@@ -20,7 +20,7 @@
     "productName": "Facebook Manager"
   },
   "devDependencies": {
-    "electron": "^11.5.0"
+    "electron": "^15.5.5"
   },
   "dependencies": {
     "lowdb": "^1.0.0",
